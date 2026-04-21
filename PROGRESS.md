@@ -30,6 +30,7 @@
 ## 🔲 Qilinishi kerak bo'lgan ishlar
 
 ### Restaurant Panel (davom)
+- [ ] Yangi buyurtmalar avtomatik ko'rinishi — `getPollingInterval(): '10s'` (ListOrders, faqat restoran uchun)
 - [ ] Restoran profili — o'z ma'lumotlarini ko'rish/tahrirlash (ism, logo, manzil, ish vaqti)
 - [ ] Dashboard statistikasi — kunlik daromad, eng ko'p sotilgan mahsulotlar
 
