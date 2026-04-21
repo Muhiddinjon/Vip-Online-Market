@@ -2,10 +2,8 @@
 
 namespace App\Providers;
 
-use Filament\Support\Facades\FilamentView;
-use Filament\View\PanelsRenderHook;
-use Filament\Resources\Pages\CreateRecord;
-use Filament\Resources\Pages\EditRecord;
+use BezhanSalleh\LanguageSwitch\LanguageSwitch;
+use BezhanSalleh\LanguageSwitch\Enums\Placement;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -14,21 +12,24 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        FilamentView::registerRenderHook(
-            PanelsRenderHook::PAGE_HEADER_ACTIONS_BEFORE,
-            function (array $scopes) {
-                $isFormPage = collect($scopes)->contains(
-                    fn ($scope) =>
-                        is_a($scope, CreateRecord::class, true) ||
-                        is_a($scope, EditRecord::class, true)
-                );
-
-                if (! $isFormPage) {
-                    return '';
-                }
-
-                return view('filament.components.lang-switcher-inline');
-            },
-        );
+        LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
+            $switch
+                ->locales(['uz', 'tr', 'en'])
+                ->labels([
+                    'uz' => "O'zbekcha",
+                    'tr' => 'Türkçe',
+                    'en' => 'English',
+                ])
+                ->flags([
+                    'uz' => asset('flags/uz.svg'),
+                    'tr' => asset('flags/tr.svg'),
+                    'en' => asset('flags/en.svg'),
+                ])
+                ->circular()
+                ->renderHook('panels::topbar.end')
+                ->visible(outsidePanels: true)
+                ->outsidePanelPlacement(Placement::TopRight)
+                ->outsidePanelsRenderHook('panels::body.start');
+        });
     }
 }

@@ -11,6 +11,10 @@ class ListCategories extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [CreateAction::make()->label('Kategoriya qo\'shish')];
+        return [
+            CreateAction::make()
+                ->label(__('admin.category.create'))
+                ->createAnother(false),
+        ];
     }
 }

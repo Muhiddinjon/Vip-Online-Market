@@ -22,27 +22,27 @@ class StatsOverview extends BaseWidget
             ->sum('total');
 
         return [
-            Stat::make('Bugungi buyurtmalar', $todayOrders)
-                ->description('Jami bugun')
+            Stat::make(__('admin.stats.today_orders'), $todayOrders)
+                ->description(__('admin.stats.today_total'))
                 ->icon('heroicon-o-shopping-bag')
                 ->color('primary'),
 
-            Stat::make('Kutilayotgan', $pendingOrders)
-                ->description('Hozir pending')
+            Stat::make(__('admin.stats.pending_orders'), $pendingOrders)
+                ->description(__('admin.stats.now_pending'))
                 ->icon('heroicon-o-clock')
                 ->color($pendingOrders > 0 ? 'warning' : 'success'),
 
-            Stat::make('Faol restoranlar', $restaurants)
-                ->description('Ishlamoqda')
+            Stat::make(__('admin.stats.active_restaurants'), $restaurants)
+                ->description(__('admin.stats.working'))
                 ->icon('heroicon-o-building-storefront')
                 ->color('success'),
 
-            Stat::make('Mavjud kuryerlar', $couriers)
-                ->description('Online va bo\'sh')
+            Stat::make(__('admin.stats.available_couriers'), $couriers)
+                ->description(__('admin.stats.online_free'))
                 ->icon('heroicon-o-truck')
                 ->color('info'),
 
-            Stat::make('Oylik daromad', number_format($monthRevenue, 0, '.', ' ') . ' so\'m')
+            Stat::make(__('admin.stats.monthly_revenue'), number_format($monthRevenue, 0, '.', ' ') . " so'm")
                 ->description(now()->format('F Y'))
                 ->icon('heroicon-o-banknotes')
                 ->color('success'),

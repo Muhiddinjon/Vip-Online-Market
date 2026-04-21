@@ -22,22 +22,21 @@ class RestaurantStats extends BaseWidget
             ->whereIn('status', ['pending', 'confirmed', 'preparing'])
             ->count();
 
-        $totalProducts = Product::where('restaurant_id', $restaurantId)->count();
-
+        $totalProducts  = Product::where('restaurant_id', $restaurantId)->count();
         $totalCategories = Category::where('status', 'active')->count();
 
         return [
-            Stat::make('Bugungi buyurtmalar', $todayOrders)
-                ->description('Bekor qilinmagan')
+            Stat::make(__('admin.stats.today_orders'), $todayOrders)
+                ->description(__('admin.stats.cancelled_not'))
                 ->color('success'),
-            Stat::make('Faol buyurtmalar', $pendingOrders)
-                ->description('Bajarilishi kutilmoqda')
+            Stat::make(__('admin.order.status_pending'), $pendingOrders)
+                ->description(__('admin.stats.in_progress'))
                 ->color('warning'),
-            Stat::make('Mahsulotlar', $totalProducts)
-                ->description('Jami')
+            Stat::make(__('admin.nav.products'), $totalProducts)
+                ->description(__('admin.stats.total'))
                 ->color('info'),
-            Stat::make('Kategoriyalar', $totalCategories)
-                ->description('Jami')
+            Stat::make(__('admin.nav.categories'), $totalCategories)
+                ->description(__('admin.stats.total'))
                 ->color('primary'),
         ];
     }

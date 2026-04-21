@@ -29,9 +29,19 @@ class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-tag';
-    protected static ?string $navigationLabel = 'Kategoriyalar';
-    protected static string|\UnitEnum|null $navigationGroup = 'Menyu';
+    protected static ?string $navigationLabel = null;
+    protected static string|\UnitEnum|null $navigationGroup = null;
     protected static ?int $navigationSort = 1;
+
+    public static function getNavigationLabel(): string
+    {
+        return __('admin.nav.categories');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('admin.nav.group_menu');
+    }
 
     public static function canViewAny(): bool { return true; }
     public static function canDelete(Model $record): bool { return true; }
@@ -49,15 +59,15 @@ class CategoryResource extends Resource
         $lang = fn ($get) => $get('lang') ?: 'uz';
 
         return $schema->components([
-            Section::make('Kategoriya')->components([
-                TextInput::make('name.uz')->label('Nomi (UZ)')->required()->visible(fn($get) => $lang($get) === 'uz')->dehydratedWhenHidden(),
-                TextInput::make('name.en')->label('Name (EN)')->visible(fn($get) => $lang($get) === 'en')->dehydratedWhenHidden(),
-                TextInput::make('name.tr')->label('İsim (TR)')->visible(fn($get) => $lang($get) === 'tr')->dehydratedWhenHidden(),
+            Section::make(__('admin.category.section_title'))->components([
+                TextInput::make('name.uz')->label(__('admin.category.name_uz'))->required()->visible(fn($get) => $lang($get) === 'uz')->dehydratedWhenHidden(),
+                TextInput::make('name.en')->label(__('admin.category.name_en'))->visible(fn($get) => $lang($get) === 'en')->dehydratedWhenHidden(),
+                TextInput::make('name.tr')->label(__('admin.category.name_tr'))->visible(fn($get) => $lang($get) === 'tr')->dehydratedWhenHidden(),
                 Grid::make(2)->components([
-                    TextInput::make('sort_order')->label('Tartib')->numeric()->default(0),
-                    Select::make('status')->label('Holat')->options([
-                        'active'   => 'Faol',
-                        'inactive' => 'Nofaol',
+                    TextInput::make('sort_order')->label(__('admin.category.sort_order'))->numeric()->default(0),
+                    Select::make('status')->label(__('admin.common.status'))->options([
+                        'active'   => __('admin.common.active'),
+                        'inactive' => __('admin.common.inactive'),
                     ])->default('active')->required(),
                 ]),
             ]),
@@ -68,37 +78,37 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name.uz')->label('Kategoriya')
+                TextColumn::make('name.uz')->label(__('admin.category.label'))
                     ->getStateUsing(fn ($record) => $record->name['uz'] ?? $record->name['en'] ?? $record->name['tr'] ?? '—')
                     ->searchable()->sortable(),
                 TextColumn::make('name.en')->label('EN')->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('name.tr')->label('TR')->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('products_count')->label('Mahsulotlar')->counts('products')->sortable(),
-                TextColumn::make('sort_order')->label('Tartib')->sortable(),
-                TextColumn::make('status')->label('Holat')->badge()
+                TextColumn::make('products_count')->label(__('admin.category.products'))->counts('products')->sortable(),
+                TextColumn::make('sort_order')->label(__('admin.category.sort_order'))->sortable(),
+                TextColumn::make('status')->label(__('admin.common.status'))->badge()
                     ->color(fn ($state) => $state === 'active' ? 'success' : 'gray')
-                    ->formatStateUsing(fn ($state) => $state === 'active' ? 'Faol' : 'Nofaol'),
-                TextColumn::make('deleted_at')->label('O\'chirilgan')->dateTime('d.m.Y')
+                    ->formatStateUsing(fn ($state) => $state === 'active' ? __('admin.common.active') : __('admin.common.inactive')),
+                TextColumn::make('deleted_at')->label(__('admin.common.deleted_at'))->dateTime('d.m.Y')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                TrashedFilter::make()->label('O\'chirilganlar'),
-                SelectFilter::make('status')->label('Holat')
-                    ->options(['active' => 'Faol', 'inactive' => 'Nofaol']),
+                TrashedFilter::make()->label(__('admin.common.trashed')),
+                SelectFilter::make('status')->label(__('admin.common.status'))
+                    ->options(['active' => __('admin.common.active'), 'inactive' => __('admin.common.inactive')]),
             ])
             ->actions([
                 ActionGroup::make([
-                    EditAction::make()->label('Tahrirlash'),
-                    RestoreAction::make()->label('Tiklash'),
-                    DeleteAction::make()->label('O\'chirish'),
-                    ForceDeleteAction::make()->label('Butunlay o\'chirish'),
+                    EditAction::make()->label(__('admin.common.edit')),
+                    RestoreAction::make()->label(__('admin.common.restore')),
+                    DeleteAction::make()->label(__('admin.common.delete')),
+                    ForceDeleteAction::make()->label(__('admin.common.force_delete')),
                 ]),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make()->label('O\'chirish'),
-                    RestoreBulkAction::make()->label('Tiklash'),
-                    ForceDeleteBulkAction::make()->label('Butunlay o\'chirish'),
+                    DeleteBulkAction::make()->label(__('admin.common.delete')),
+                    RestoreBulkAction::make()->label(__('admin.common.restore')),
+                    ForceDeleteBulkAction::make()->label(__('admin.common.force_delete')),
                 ]),
             ])
             ->defaultSort('sort_order');
@@ -109,9 +119,7 @@ class CategoryResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListCategories::route('/'),
-            'create' => Pages\CreateCategory::route('/create'),
-            'edit'   => Pages\EditCategory::route('/{record}/edit'),
+            'index' => Pages\ListCategories::route('/'),
         ];
     }
 }

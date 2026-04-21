@@ -29,11 +29,20 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
-    protected static ?string $navigationLabel = 'Foydalanuvchilar';
-    protected static string|\UnitEnum|null $navigationGroup = 'Boshqaruv';
+    protected static ?string $navigationLabel = null;
+    protected static string|\UnitEnum|null $navigationGroup = null;
     protected static ?int $navigationSort = 3;
 
-    // Faqat admin
+    public static function getNavigationLabel(): string
+    {
+        return __('admin.nav.users');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('admin.nav.group_management');
+    }
+
     public static function canViewAny(): bool
     {
         return auth()->user()?->role === 'admin';
@@ -65,28 +74,28 @@ class UserResource extends Resource
         return $schema->components([
             Section::make()->components([
                 Grid::make(2)->components([
-                    TextInput::make('name')->label('Ism')->required(),
+                    TextInput::make('name')->label(__('admin.user.name'))->required(),
                     TextInput::make('email')->label('Email')->email()->required()->unique(ignoreRecord: true),
                 ]),
-                TextInput::make('phone')->label('Telefon')->tel(),
+                TextInput::make('phone')->label(__('admin.user.phone'))->tel(),
                 Grid::make(2)->components([
-                    Select::make('role')->label('Rol')->options([
-                        'admin'      => 'Admin',
-                        'restaurant' => 'Restoran egasi',
-                        'courier'    => 'Kuryer',
-                        'customer'   => 'Mijoz',
+                    Select::make('role')->label(__('admin.user.role'))->options([
+                        'admin'      => __('admin.user.role_admin'),
+                        'restaurant' => __('admin.user.role_restaurant'),
+                        'courier'    => __('admin.user.role_courier'),
+                        'customer'   => __('admin.user.role_customer'),
                     ])->required()->default('admin'),
-                    Select::make('status')->label('Status')->options([
-                        'active'  => 'Faol',
-                        'blocked' => 'Bloklangan',
+                    Select::make('status')->label(__('admin.common.status'))->options([
+                        'active'  => __('admin.common.active'),
+                        'blocked' => __('admin.common.blocked'),
                     ])->required()->default('active'),
                 ]),
-                TextInput::make('password')->label('Parol')->password()
+                TextInput::make('password')->label(__('admin.user.password'))->password()
                     ->dehydrateStateUsing(fn ($state) => filled($state) ? bcrypt($state) : null)
                     ->dehydrated(fn ($state) => filled($state))
                     ->required(fn ($livewire) => $livewire instanceof \Filament\Resources\Pages\CreateRecord)
                     ->minLength(8)
-                    ->placeholder('O\'zgartirmaslik uchun bo\'sh qoldiring'),
+                    ->placeholder(__('admin.user.password_hint')),
             ]),
         ]);
     }
@@ -95,10 +104,10 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->label('Ism')->searchable()->sortable(),
+                TextColumn::make('name')->label(__('admin.user.name'))->searchable()->sortable(),
                 TextColumn::make('email')->label('Email')->searchable(),
-                TextColumn::make('phone')->label('Telefon')->searchable()->default('—'),
-                TextColumn::make('role')->label('Rol')->badge()
+                TextColumn::make('phone')->label(__('admin.user.phone'))->searchable()->default('—'),
+                TextColumn::make('role')->label(__('admin.user.role'))->badge()
                     ->color(fn ($state) => match($state) {
                         'admin'      => 'danger',
                         'restaurant' => 'info',
@@ -107,44 +116,44 @@ class UserResource extends Resource
                         default      => 'gray',
                     })
                     ->formatStateUsing(fn ($state) => match($state) {
-                        'admin'      => 'Admin',
-                        'restaurant' => 'Restoran egasi',
-                        'courier'    => 'Kuryer',
-                        'customer'   => 'Mijoz',
+                        'admin'      => __('admin.user.role_admin'),
+                        'restaurant' => __('admin.user.role_restaurant'),
+                        'courier'    => __('admin.user.role_courier'),
+                        'customer'   => __('admin.user.role_customer'),
                         default      => $state,
                     }),
-                TextColumn::make('status')->label('Status')->badge()
+                TextColumn::make('status')->label(__('admin.common.status'))->badge()
                     ->color(fn ($state) => $state === 'active' ? 'success' : 'danger')
-                    ->formatStateUsing(fn ($state) => $state === 'active' ? 'Faol' : 'Bloklangan'),
-                TextColumn::make('created_at')->label('Qo\'shilgan')->date('d.m.Y')->sortable(),
-                TextColumn::make('deleted_at')->label('O\'chirilgan')->dateTime('d.m.Y')->sortable()
+                    ->formatStateUsing(fn ($state) => $state === 'active' ? __('admin.common.active') : __('admin.common.blocked')),
+                TextColumn::make('created_at')->label(__('admin.common.created_at'))->date('d.m.Y')->sortable(),
+                TextColumn::make('deleted_at')->label(__('admin.common.deleted_at'))->dateTime('d.m.Y')->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                TrashedFilter::make()->label('O\'chirilganlar'),
-                SelectFilter::make('role')->label('Rol')->options([
-                    'admin'      => 'Admin',
-                    'restaurant' => 'Restoran egasi',
-                    'courier'    => 'Kuryer',
-                    'customer'   => 'Mijoz',
+                TrashedFilter::make()->label(__('admin.common.trashed')),
+                SelectFilter::make('role')->label(__('admin.user.role'))->options([
+                    'admin'      => __('admin.user.role_admin'),
+                    'restaurant' => __('admin.user.role_restaurant'),
+                    'courier'    => __('admin.user.role_courier'),
+                    'customer'   => __('admin.user.role_customer'),
                 ]),
-                SelectFilter::make('status')->label('Status')->options([
-                    'active' => 'Faol', 'blocked' => 'Bloklangan',
+                SelectFilter::make('status')->label(__('admin.common.status'))->options([
+                    'active' => __('admin.common.active'), 'blocked' => __('admin.common.blocked'),
                 ]),
             ])
             ->actions([
                 ActionGroup::make([
-                    EditAction::make()->label('Tahrirlash'),
-                    RestoreAction::make()->label('Tiklash'),
-                    DeleteAction::make()->label('O\'chirish'),
-                    ForceDeleteAction::make()->label('Butunlay o\'chirish'),
+                    EditAction::make()->label(__('admin.common.edit')),
+                    RestoreAction::make()->label(__('admin.common.restore')),
+                    DeleteAction::make()->label(__('admin.common.delete')),
+                    ForceDeleteAction::make()->label(__('admin.common.force_delete')),
                 ]),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make()->label('O\'chirish'),
-                    RestoreBulkAction::make()->label('Tiklash'),
-                    ForceDeleteBulkAction::make()->label('Butunlay o\'chirish'),
+                    DeleteBulkAction::make()->label(__('admin.common.delete')),
+                    RestoreBulkAction::make()->label(__('admin.common.restore')),
+                    ForceDeleteBulkAction::make()->label(__('admin.common.force_delete')),
                 ]),
             ]);
     }
@@ -154,9 +163,7 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'edit'   => Pages\EditUser::route('/{record}/edit'),
+            'index' => Pages\ListUsers::route('/'),
         ];
     }
 }

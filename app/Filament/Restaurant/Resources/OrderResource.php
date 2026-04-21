@@ -15,10 +15,12 @@ class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
-    protected static ?string $navigationLabel = 'Buyurtmalar';
-    protected static ?string $modelLabel = 'Buyurtma';
-    protected static ?string $pluralModelLabel = 'Buyurtmalar';
     protected static ?int $navigationSort = 3;
+
+    public static function getNavigationLabel(): string
+    {
+        return __('admin.nav.orders');
+    }
 
     public static function canCreate(): bool
     {
@@ -41,82 +43,66 @@ class OrderResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('id')
-                    ->label('#')
-                    ->sortable(),
-                TextColumn::make('customer.user.name')
-                    ->label('Mijoz')
-                    ->searchable(),
-                TextColumn::make('total')
-                    ->label('Summa')
-                    ->money('UZS')
-                    ->sortable(),
-                TextColumn::make('status')
-                    ->label('Holat')
-                    ->badge()
+                TextColumn::make('id')->label('#')->sortable(),
+                TextColumn::make('customer.user.name')->label(__('admin.order.customer'))->searchable(),
+                TextColumn::make('total')->label(__('admin.order.total'))->money('UZS')->sortable(),
+                TextColumn::make('status')->label('Status')->badge()
                     ->color(fn ($state) => match ($state) {
-                        'pending'   => 'warning',
-                        'confirmed' => 'info',
-                        'preparing' => 'primary',
-                        'ready'     => 'success',
-                        'delivering'=> 'info',
-                        'delivered' => 'success',
-                        'cancelled' => 'danger',
-                        default     => 'gray',
+                        'pending'    => 'warning',
+                        'confirmed'  => 'info',
+                        'preparing'  => 'primary',
+                        'ready'      => 'success',
+                        'delivering' => 'info',
+                        'delivered'  => 'success',
+                        'cancelled'  => 'danger',
+                        default      => 'gray',
                     })
                     ->formatStateUsing(fn ($state) => match ($state) {
-                        'pending'    => 'Kutilmoqda',
-                        'confirmed'  => 'Qabul qilindi',
-                        'preparing'  => 'Tayyorlanmoqda',
-                        'ready'      => 'Tayyor',
-                        'delivering' => 'Yetkazilmoqda',
-                        'delivered'  => 'Yetkazildi',
-                        'cancelled'  => 'Bekor qilindi',
+                        'pending'    => __('admin.order.status_pending'),
+                        'confirmed'  => __('admin.order.status_confirmed'),
+                        'preparing'  => __('admin.order.status_preparing'),
+                        'ready'      => __('admin.order.status_ready'),
+                        'delivering' => __('admin.order.status_delivering'),
+                        'delivered'  => __('admin.order.status_delivered'),
+                        'cancelled'  => __('admin.order.status_cancelled'),
                         default      => $state,
                     }),
-                TextColumn::make('created_at')
-                    ->label('Vaqt')
-                    ->dateTime('d.m.Y H:i')
-                    ->sortable(),
+                TextColumn::make('created_at')->label(__('admin.order.date'))->dateTime('d.m.Y H:i')->sortable(),
             ])
             ->actions([
                 Action::make('confirm')
-                    ->label('Qabul qilish')
-                    ->color('success')
-                    ->icon('heroicon-o-check')
+                    ->label(__('admin.order.status_confirmed'))
+                    ->color('success')->icon('heroicon-o-check')
                     ->visible(fn (Order $record) => $record->status === 'pending')
                     ->action(fn (Order $record) => $record->update(['status' => 'confirmed'])),
                 Action::make('prepare')
-                    ->label('Tayyorlanmoqda')
-                    ->color('primary')
-                    ->icon('heroicon-o-fire')
+                    ->label(__('admin.order.status_preparing'))
+                    ->color('primary')->icon('heroicon-o-fire')
                     ->visible(fn (Order $record) => $record->status === 'confirmed')
                     ->action(fn (Order $record) => $record->update(['status' => 'preparing'])),
                 Action::make('ready')
-                    ->label('Tayyor')
-                    ->color('info')
-                    ->icon('heroicon-o-check-badge')
+                    ->label(__('admin.order.status_ready'))
+                    ->color('info')->icon('heroicon-o-check-badge')
                     ->visible(fn (Order $record) => $record->status === 'preparing')
                     ->action(fn (Order $record) => $record->update(['status' => 'ready'])),
                 Action::make('cancel')
-                    ->label('Bekor qilish')
-                    ->color('danger')
-                    ->icon('heroicon-o-x-circle')
+                    ->label(__('admin.order.status_cancelled'))
+                    ->color('danger')->icon('heroicon-o-x-circle')
                     ->visible(fn (Order $record) => in_array($record->status, ['pending', 'confirmed']))
                     ->requiresConfirmation()
                     ->action(fn (Order $record) => $record->update(['status' => 'cancelled'])),
             ])
             ->filters([
                 SelectFilter::make('status')
-                    ->label('Holat')
+                    ->label('Status')
                     ->options([
-                        'pending'    => 'Kutilmoqda',
-                        'confirmed'  => 'Qabul qilindi',
-                        'preparing'  => 'Tayyorlanmoqda',
-                        'ready'      => 'Tayyor',
-                        'delivering' => 'Yetkazilmoqda',
-                        'delivered'  => 'Yetkazildi',
-                        'cancelled'  => 'Bekor qilindi',
+                        'pending'    => __('admin.order.status_pending'),
+                        'confirmed'  => __('admin.order.status_confirmed'),
+                        'preparing'  => __('admin.order.status_preparing'),
+                        'ready'      => __('admin.order.status_ready'),
+                        'delivering' => __('admin.order.status_delivering'),
+                        'delivered'  => __('admin.order.status_delivered'),
+                        'cancelled'  => __('admin.order.status_cancelled'),
                     ]),
             ])
             ->defaultSort('created_at', 'desc');
