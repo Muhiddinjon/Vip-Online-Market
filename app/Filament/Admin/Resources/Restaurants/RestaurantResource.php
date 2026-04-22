@@ -19,6 +19,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -58,7 +59,7 @@ class RestaurantResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        $isCreate = ! ($schema->getLivewire()?->record instanceof Restaurant);
+        $isCreate = fn ($record) => ! ($record instanceof Restaurant);
         $lang = fn ($get) => $get('lang') ?: 'uz';
 
         return $schema->components([
@@ -71,7 +72,7 @@ class RestaurantResource extends Resource
                     TextInput::make('password')
                         ->label(__('admin.user.password'))->password()
                         ->required($isCreate)->minLength(8)
-                        ->placeholder($isCreate ? '' : __('admin.user.password_hint'))
+                        ->placeholder(fn ($record) => ! ($record instanceof Restaurant) ? '' : __('admin.user.password_hint'))
                         ->visible($isCreate),
                 ]),
             ]),
@@ -89,16 +90,19 @@ class RestaurantResource extends Resource
             ]),
 
             Section::make(__('admin.restaurant.section_description'))->components([
-                Textarea::make('description.uz')->label(__('admin.category.name_uz'))->rows(3)->visible(fn($get) => $lang($get) === 'uz'),
-                Textarea::make('description.en')->label(__('admin.category.name_en'))->rows(3)->visible(fn($get) => $lang($get) === 'en'),
-                Textarea::make('description.tr')->label(__('admin.category.name_tr'))->rows(3)->visible(fn($get) => $lang($get) === 'tr'),
+                Textarea::make('description.uz')->label(__('admin.category.name_uz'))->rows(3),
+                Textarea::make('description.en')->label(__('admin.category.name_en'))->rows(3),
+                Textarea::make('description.tr')->label(__('admin.category.name_tr'))->rows(3),
             ]),
 
             Section::make(__('admin.restaurant.section_address'))->components([
                 TextInput::make('address')->label(__('admin.restaurant.address')),
+                View::make('filament.components.maps-picker'),
                 Grid::make(2)->components([
-                    TextInput::make('lat')->label('Latitude')->numeric()->readOnly(),
-                    TextInput::make('lng')->label('Longitude')->numeric()->readOnly(),
+                    TextInput::make('lat')->label('Latitude')->numeric()->readOnly()
+                        ->extraInputAttributes(['data-map-lat' => 'true']),
+                    TextInput::make('lng')->label('Longitude')->numeric()->readOnly()
+                        ->extraInputAttributes(['data-map-lng' => 'true']),
                 ]),
             ]),
 

@@ -8,7 +8,30 @@
 
         openModal() {
             this.open = true;
-            this.$nextTick(() => this.initMap());
+            // Read existing values from the form inputs directly
+            const latEl = document.querySelector('[data-map-lat]');
+            const lngEl = document.querySelector('[data-map-lng]');
+            if (latEl?.value) this.lat = latEl.value;
+            if (lngEl?.value) this.lng = lngEl.value;
+            this.$nextTick(() => this.loadLeaflet());
+        },
+
+        loadLeaflet() {
+            if (window.L) { this.initMap(); return; }
+
+            const cssId = 'leaflet-css';
+            if (!document.getElementById(cssId)) {
+                const link = document.createElement('link');
+                link.id = cssId;
+                link.rel = 'stylesheet';
+                link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+                document.head.appendChild(link);
+            }
+
+            const script = document.createElement('script');
+            script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+            script.onload = () => this.initMap();
+            document.head.appendChild(script);
         },
 
         initMap() {
@@ -17,8 +40,8 @@
                 return;
             }
 
-            const existingLat = parseFloat(this.$wire.get('data.lat')) || 41.2995;
-            const existingLng = parseFloat(this.$wire.get('data.lng')) || 69.2401;
+            const existingLat = parseFloat(this.lat) || 41.2995;
+            const existingLng = parseFloat(this.lng) || 69.2401;
 
             this.map = L.map('lmap-canvas').setView([existingLat, existingLng], 13);
 
@@ -27,9 +50,7 @@
                 maxZoom: 19,
             }).addTo(this.map);
 
-            if (this.$wire.get('data.lat') && this.$wire.get('data.lng')) {
-                this.lat = this.$wire.get('data.lat');
-                this.lng = this.$wire.get('data.lng');
+            if (this.lat && this.lng) {
                 this.addMarker([existingLat, existingLng]);
             }
 
@@ -47,19 +68,20 @@
 
         save() {
             if (this.lat && this.lng) {
-                this.$wire.set('data.lat', this.lat);
-                this.$wire.set('data.lng', this.lng);
+                const setField = (selector, value) => {
+                    const el = document.querySelector(selector);
+                    if (!el) return;
+                    const nativeSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+                    nativeSet.call(el, value);
+                    el.dispatchEvent(new Event('input', { bubbles: true }));
+                };
+                setField('[data-map-lat]', this.lat);
+                setField('[data-map-lng]', this.lng);
             }
             this.open = false;
         },
     }"
 >
-    {{-- Leaflet CSS --}}
-    @once
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    @endonce
-
     {{-- Trigger --}}
     <button
         type="button"
@@ -82,8 +104,8 @@
     </button>
 
     {{-- Saved coords hint --}}
-    <div style="margin-top:6px;font-size:0.75rem;color:#6b7280;" x-show="$wire.get('data.lat') && $wire.get('data.lng')">
-        📍 <span x-text="$wire.get('data.lat')"></span>, <span x-text="$wire.get('data.lng')"></span>
+    <div style="margin-top:6px;font-size:0.75rem;color:#6b7280;" x-show="lat && lng">
+        📍 <span x-text="lat"></span>, <span x-text="lng"></span>
     </div>
 
     {{-- MODAL --}}
@@ -157,7 +179,7 @@
                         "
                     >
                         <div style="display:flex;align-items:center;gap:8px;">
-                            <div style="width:8px;height:8px;border-radius:50%;background:#34d399;animation:pulse 2s infinite;flex-shrink:0;"></div>
+                            <div style="width:8px;height:8px;border-radius:50%;background:#34d399;animation:lmap-pulse 2s infinite;flex-shrink:0;"></div>
                             <span style="color:#a7f3d0;font-size:0.8rem;font-family:monospace;font-weight:600;" x-text="lat + ', ' + lng"></span>
                         </div>
                     </div>
@@ -217,7 +239,7 @@
 </div>
 
 <style>
-@keyframes pulse {
+@keyframes lmap-pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.4; }
 }
