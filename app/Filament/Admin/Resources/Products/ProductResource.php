@@ -4,8 +4,6 @@ namespace App\Filament\Admin\Resources\Products;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Restaurant;
-use Filament\Actions\ActionGroup;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -13,6 +11,7 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\BulkActionGroup;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -23,6 +22,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -56,12 +56,12 @@ class ProductResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
+            ->with(['images', 'category'])
             ->withoutGlobalScopes([SoftDeletingScope::class]);
     }
 
     public static function form(Schema $schema): Schema
     {
-        // 3-column grid: left Group spans 1 col, right Section spans 2 cols
         return $schema->columns(2)->components([
 
             Group::make([
@@ -82,7 +82,6 @@ class ProductResource extends Resource
                         TextInput::make('price')
                             ->label(__('admin.product.price'))
                             ->numeric()->required(),
-                        // dehydrated(false) until DB migration runs (original_price column)
                         TextInput::make('original_price')
                             ->label(__('admin.product.original_price'))
                             ->numeric()
@@ -109,13 +108,13 @@ class ProductResource extends Resource
                     FileUpload::make('images')
                         ->label(__('admin.product.images'))
                         ->multiple()
+                        ->minFiles(1)
                         ->maxFiles(3)
                         ->image()
                         ->disk('public')
                         ->directory('products')
                         ->maxSize(2048)
-                        ->reorderable()
-                        ->dehydrated(false),
+                        ->reorderable(),
                 ]),
             ])->columnSpan(1),
 
@@ -137,13 +136,21 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
+                ImageColumn::make('images.path')
+                    ->label(__('admin.product.image'))
+                    ->circular()
+                    ->limit(1)
+                    ->disk('public'),
                 TextColumn::make('restaurant.name')->label(__('admin.nav.restaurants'))->searchable()->sortable(),
-                TextColumn::make('category.name.uz')->label(__('admin.nav.categories'))->sortable(),
+                TextColumn::make('category_name')
+                    ->label(__('admin.nav.categories'))
+                    ->getStateUsing(fn (Product $record): string =>
+                        $record->category?->name['uz'] ??
+                        $record->category?->name['en'] ??
+                        $record->category?->name['tr'] ?? '—'
+                    ),
                 TextColumn::make('name.uz')->label(__('admin.product.label_uz'))->searchable()->sortable(),
                 TextColumn::make('price')->label(__('admin.product.price'))->money('UZS')->sortable(),
-                TextColumn::make('original_price')->label(__('admin.product.original_price'))
-                    ->money('UZS')->sortable()->placeholder('—')
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('unit')->label(__('admin.product.unit')),
                 ToggleColumn::make('is_available')->label(__('admin.product.available')),
                 TextColumn::make('deleted_at')->label(__('admin.common.deleted_at'))->dateTime('d.m.Y')
@@ -155,25 +162,24 @@ class ProductResource extends Resource
                     ->options(Restaurant::withoutTrashed()->pluck('name', 'id')),
             ])
             ->actions([
-                ActionGroup::make([
-                    EditAction::make()
-                        ->label(__('admin.common.edit'))
-                        ->mutateRecordDataUsing(function (array $data, Product $record): array {
-                            $data['images'] = $record->images()->pluck('path')->toArray();
-                            return $data;
-                        })
-                        ->after(function (Product $record, array $data): void {
-                            $record->images()->delete();
-                            foreach ($data['images'] ?? [] as $i => $path) {
-                                if ($path) {
-                                    $record->images()->create(['path' => $path, 'sort_order' => $i]);
-                                }
+                EditAction::make()
+                    ->label('')
+                    ->tooltip(__('admin.common.edit'))
+                    ->mutateRecordDataUsing(function (array $data, Product $record): array {
+                        $data['images'] = $record->images()->pluck('path')->toArray();
+                        return $data;
+                    })
+                    ->after(function (Product $record, array $data): void {
+                        $record->images()->delete();
+                        foreach ($data['images'] ?? [] as $i => $path) {
+                            if ($path) {
+                                $record->images()->create(['path' => $path, 'sort_order' => $i]);
                             }
-                        }),
-                    RestoreAction::make()->label(__('admin.common.restore')),
-                    DeleteAction::make()->label(__('admin.common.delete')),
-                    ForceDeleteAction::make()->label(__('admin.common.force_delete')),
-                ]),
+                        }
+                    }),
+                RestoreAction::make()->label('')->tooltip(__('admin.common.restore')),
+                DeleteAction::make()->label('')->tooltip(__('admin.common.delete')),
+                ForceDeleteAction::make()->label('')->tooltip(__('admin.common.force_delete')),
             ])
             ->bulkActions([
                 BulkActionGroup::make([

@@ -3,7 +3,6 @@ namespace App\Filament\Admin\Resources\Restaurants;
 
 use App\Models\Restaurant;
 use Filament\Actions\Action;
-use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -68,7 +67,11 @@ class RestaurantResource extends Resource
                     TextInput::make('email')
                         ->label('Email')->email()
                         ->required($isCreate)
-                        ->unique('users', 'email', ignoreRecord: true),
+                        ->unique(
+                            table: 'users',
+                            column: 'email',
+                            ignorable: fn ($record) => $record instanceof Restaurant ? $record->user : null
+                        ),
                     TextInput::make('password')
                         ->label(__('admin.user.password'))->password()
                         ->required($isCreate)->minLength(8)
@@ -147,48 +150,49 @@ class RestaurantResource extends Resource
                 ]),
             ])
             ->actions([
-                ActionGroup::make([
-                    EditAction::make()
-                        ->label(__('admin.common.edit'))
-                        ->mutateRecordDataUsing(function (array $data, Restaurant $record): array {
-                            $data['email'] = $record->user?->email ?? '';
-                            return $data;
-                        })
-                        ->using(function (Restaurant $record, array $data): Restaurant {
-                            if (!empty($data['email'])) {
-                                $record->user?->update([
-                                    'name'  => $data['name'],
-                                    'email' => $data['email'],
-                                ]);
-                            }
-                            $record->update([
-                                'name'        => $data['name'],
-                                'description' => $data['description'] ?? null,
-                                'address'     => $data['address'] ?? null,
-                                'lat'         => $data['lat'] ?? null,
-                                'lng'         => $data['lng'] ?? null,
-                                'logo'        => $data['logo'] ?? $record->logo,
-                                'cover_image' => $data['cover_image'] ?? $record->cover_image,
-                                'phone'       => $data['phone'] ?? null,
-                                'status'      => $data['status'],
+                EditAction::make()
+                    ->label('')
+                    ->tooltip(__('admin.common.edit'))
+                    ->mutateRecordDataUsing(function (array $data, Restaurant $record): array {
+                        $data['email'] = $record->user?->email ?? '';
+                        return $data;
+                    })
+                    ->using(function (Restaurant $record, array $data): Restaurant {
+                        if (!empty($data['email'])) {
+                            $record->user?->update([
+                                'name'  => $data['name'],
+                                'email' => $data['email'],
                             ]);
-                            return $record;
-                        }),
-                    Action::make('block')
-                        ->label(__('admin.common.block'))
-                        ->icon('heroicon-o-no-symbol')->color('danger')
-                        ->requiresConfirmation()
-                        ->visible(fn ($record) => $record->status !== 'blocked' && !$record->trashed())
-                        ->action(fn ($record) => $record->update(['status' => 'blocked'])),
-                    Action::make('activate')
-                        ->label(__('admin.common.activate'))
-                        ->icon('heroicon-o-check-circle')->color('success')
-                        ->visible(fn ($record) => $record->status === 'blocked' && !$record->trashed())
-                        ->action(fn ($record) => $record->update(['status' => 'active'])),
-                    RestoreAction::make()->label(__('admin.common.restore')),
-                    DeleteAction::make()->label(__('admin.common.delete')),
-                    ForceDeleteAction::make()->label(__('admin.common.force_delete')),
-                ]),
+                        }
+                        $record->update([
+                            'name'        => $data['name'],
+                            'description' => $data['description'] ?? null,
+                            'address'     => $data['address'] ?? null,
+                            'lat'         => $data['lat'] ?? null,
+                            'lng'         => $data['lng'] ?? null,
+                            'logo'        => $data['logo'] ?? $record->logo,
+                            'cover_image' => $data['cover_image'] ?? $record->cover_image,
+                            'phone'       => $data['phone'] ?? null,
+                            'status'      => $data['status'],
+                        ]);
+                        return $record;
+                    }),
+                Action::make('block')
+                    ->label('')
+                    ->tooltip(__('admin.common.block'))
+                    ->icon('heroicon-o-no-symbol')->color('danger')
+                    ->requiresConfirmation()
+                    ->visible(fn ($record) => $record->status !== 'blocked' && !$record->trashed())
+                    ->action(fn ($record) => $record->update(['status' => 'blocked'])),
+                Action::make('activate')
+                    ->label('')
+                    ->tooltip(__('admin.common.activate'))
+                    ->icon('heroicon-o-check-circle')->color('success')
+                    ->visible(fn ($record) => $record->status === 'blocked' && !$record->trashed())
+                    ->action(fn ($record) => $record->update(['status' => 'active'])),
+                RestoreAction::make()->label('')->tooltip(__('admin.common.restore')),
+                DeleteAction::make()->label('')->tooltip(__('admin.common.delete')),
+                ForceDeleteAction::make()->label('')->tooltip(__('admin.common.force_delete')),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
