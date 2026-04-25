@@ -171,10 +171,9 @@ class ProductResource extends Resource
                     })
                     ->after(function (Product $record, array $data): void {
                         $record->images()->delete();
-                        foreach ($data['images'] ?? [] as $i => $path) {
-                            if ($path) {
-                                $record->images()->create(['path' => $path, 'sort_order' => $i]);
-                            }
+                        $paths = array_values(array_filter($data['images'] ?? []));
+                        foreach ($paths as $i => $path) {
+                            $record->images()->create(['path' => $path, 'sort_order' => $i]);
                         }
                     }),
                 RestoreAction::make()->label('')->tooltip(__('admin.common.restore')),
