@@ -9,7 +9,15 @@ class Product extends Model
     use SoftDeletes;
 
     protected $fillable = ['restaurant_id', 'category_id', 'name', 'description', 'price', 'unit', 'unit_id', 'is_available'];
-    protected $casts = ['name' => 'array', 'description' => 'array', 'is_available' => 'boolean'];
+    protected $casts = [
+        'name'           => 'array',
+        'description'    => 'array',
+        'is_available'   => 'boolean',
+        'restaurant_id'  => 'integer',
+        'category_id'    => 'integer',
+        'price'          => 'float',
+        'original_price' => 'float',
+    ];
 
     // Prevent Filament FileUpload from accidentally setting the images relationship
     public function setImagesAttribute(mixed $value): void {}

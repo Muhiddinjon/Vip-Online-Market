@@ -8,7 +8,7 @@ class Category extends Model
 {
     use SoftDeletes;
     protected $fillable = ['name','sort_order','status'];
-    protected $casts = ['name' => 'array'];
+    protected $casts = ['name' => 'array', 'sort_order' => 'integer'];
 
     public function products() { return $this->hasMany(Product::class); }
 }

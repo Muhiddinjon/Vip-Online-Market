@@ -11,6 +11,8 @@ class Restaurant extends Model
     protected $casts = [
         'working_hours' => 'array',
         'description'   => 'array',
+        'lat'           => 'float',
+        'lng'           => 'float',
     ];
 
     public function user()     { return $this->belongsTo(User::class); }
