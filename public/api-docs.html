@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VipOnlineMarket — API Documentation</title>
+<style>
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --border: #2a2d3a;
+    --primary: #6c8cf7; --green: #34d399; --red: #f87171;
+    --yellow: #fbbf24; --gray: #8b92a5; --text: #e2e8f0;
+    --code-bg: #0d1117;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.6; }
+  a { color: var(--primary); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Layout */
+  .sidebar { position: fixed; top: 0; left: 0; width: 260px; height: 100vh; background: var(--surface); border-right: 1px solid var(--border); overflow-y: auto; padding: 24px 0; }
+  .sidebar h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--gray); padding: 0 20px 8px; }
+  .sidebar a { display: block; padding: 6px 20px; color: var(--text); font-size: 14px; border-left: 2px solid transparent; }
+  .sidebar a:hover { background: rgba(108,140,247,.1); border-left-color: var(--primary); text-decoration: none; }
+  .sidebar .brand { font-size: 16px; font-weight: 700; color: var(--text); padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+  .sidebar .group { margin-bottom: 20px; }
+  .content { margin-left: 260px; padding: 40px 48px; max-width: 900px; }
+
+  /* Headings */
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  h2 { font-size: 22px; font-weight: 600; margin: 40px 0 16px; padding-top: 40px; border-top: 1px solid var(--border); }
+  h3 { font-size: 17px; font-weight: 600; margin: 28px 0 10px; }
+  p { margin-bottom: 12px; color: #c8cdd8; }
+
+  /* Endpoint block */
+  .endpoint { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 28px; overflow: hidden; }
+  .endpoint-header { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--border); }
+  .endpoint-header h4 { font-size: 15px; font-weight: 500; margin: 0; }
+  .endpoint-header .desc { font-size: 13px; color: var(--gray); margin-left: auto; }
+  .endpoint-body { padding: 20px; }
+
+  /* Method badges */
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 12px; font-weight: 700; letter-spacing: .04em; font-family: monospace; }
+  .badge-get    { background: rgba(52,211,153,.15); color: var(--green); }
+  .badge-post   { background: rgba(251,191,36,.15);  color: var(--yellow); }
+  .badge-delete { background: rgba(248,113,113,.15); color: var(--red); }
+
+  /* Auth indicator */
+  .auth-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; background: rgba(108,140,247,.12); color: var(--primary); border-radius: 4px; padding: 2px 8px; }
+
+  /* Path */
+  .path { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 14px; color: var(--text); }
+
+  /* Code blocks */
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; overflow-x: auto; font-family: 'SF Mono', 'Fira Code', Consolas, monospace; font-size: 13px; line-height: 1.6; margin: 10px 0 16px; }
+  code { font-family: 'SF Mono', 'Fira Code', Consolas, monospace; }
+  .k { color: #c792ea; } /* key */
+  .s { color: #c3e88d; } /* string */
+  .n { color: #f78c6c; } /* number */
+  .b { color: #89ddff; } /* bool / null */
+  .c { color: #546e7a; } /* comment */
+
+  /* Params table */
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; font-size: 14px; }
+  th { text-align: left; padding: 8px 12px; background: var(--code-bg); color: var(--gray); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--border); }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: #c8cdd8; vertical-align: top; }
+  td:first-child { font-family: monospace; color: var(--primary); }
+  .req { color: var(--red); font-size: 11px; }
+  .opt { color: var(--gray); font-size: 11px; }
+
+  /* Info box */
+  .info { background: rgba(108,140,247,.08); border: 1px solid rgba(108,140,247,.25); border-radius: 8px; padding: 14px 18px; margin-bottom: 20px; font-size: 14px; color: #a8b4d0; }
+  .info strong { color: var(--primary); }
+
+  /* Base URL */
+  .base-url { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 18px; font-family: monospace; font-size: 14px; color: var(--green); margin-bottom: 20px; }
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="brand">🛒 VipOnlineMarket API</div>
+  <div class="group">
+    <h2>Kirish</h2>
+    <a href="#intro">Umumiy ma'lumot</a>
+    <a href="#auth-base">Autentifikatsiya</a>
+  </div>
+  <div class="group">
+    <h2>Auth</h2>
+    <a href="#otp-send">OTP yuborish</a>
+    <a href="#otp-verify">OTP tasdiqlash</a>
+    <a href="#login">Login (email)</a>
+    <a href="#me">Profilim</a>
+    <a href="#logout">Logout</a>
+  </div>
+  <div class="group">
+    <h2>Katalog</h2>
+    <a href="#restaurants">Restoranlar ro'yxati</a>
+    <a href="#restaurant-show">Restoran tafsiloti</a>
+    <a href="#categories">Kategoriyalar</a>
+    <a href="#products">Mahsulotlar ro'yxati</a>
+    <a href="#product-show">Mahsulot tafsiloti</a>
+  </div>
+  <div class="group">
+    <h2>Buyurtmalar</h2>
+    <a href="#order-store">Buyurtma berish</a>
+    <a href="#order-active">Faol buyurtmalar</a>
+    <a href="#order-show">Buyurtma holati</a>
+    <a href="#order-cancel">Bekor qilish</a>
+    <a href="#order-history">Tarix</a>
+  </div>
+</nav>
+
+<main class="content">
+
+<!-- ═══ INTRO ═══════════════════════════════════════════════════ -->
+<section id="intro">
+<h1>API Documentation</h1>
+<p>VipOnlineMarket — Flutter client app uchun REST API. Barcha javoblar JSON formatida qaytariladi.</p>
+
+<div class="base-url">Base URL: https://your-domain.com/api</div>
+
+<div class="info">
+  <strong>Til parametri:</strong> Ko'p tilli maydonlar (nom, tavsif) uchun so'rovga <code>?lang=uz</code> qo'shing.<br>
+  Qiymatlar: <code>uz</code> (standart), <code>en</code>, <code>tr</code>
+</div>
+
+<div class="info">
+  <strong>Xato formati:</strong>
+  <pre>{
+  <span class="k">"message"</span>: <span class="s">"Xato matni"</span>,
+  <span class="k">"errors"</span>: { <span class="c">// validation xatolari uchun</span>
+    <span class="k">"field"</span>: [<span class="s">"Xato matni"</span>]
+  }
+}</pre>
+</div>
+</section>
+
+<!-- ═══ AUTH ════════════════════════════════════════════════════ -->
+<h2 id="auth-base">Autentifikatsiya</h2>
+<p>Himoyalangan endpointlarga murojaat qilish uchun <code>Authorization: Bearer &lt;token&gt;</code> header qo'shing.</p>
+
+<!-- OTP SEND -->
+<div class="endpoint" id="otp-send">
+  <div class="endpoint-header">
+    <span class="badge badge-post">POST</span>
+    <span class="path">/auth/otp/send</span>
+    <span class="desc">SMS orqali tasdiqlash kodi yuborish</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Request body</h3>
+    <table>
+      <tr><th>Maydon</th><th>Tur</th><th>Holat</th><th>Tavsif</th></tr>
+      <tr><td>phone</td><td>string</td><td><span class="req">Majburiy</span></td><td>Telefon raqam, mas: +998901234567</td></tr>
+    </table>
+    <pre>POST /api/auth/otp/send
+Content-Type: application/json
+
+{
+  <span class="k">"phone"</span>: <span class="s">"+998901234567"</span>
+}</pre>
+    <h3>Response 200</h3>
+    <pre>{
+  <span class="k">"message"</span>: <span class="s">"SMS yuborildi."</span>
+}</pre>
+  </div>
+</div>
+
+<!-- OTP VERIFY -->
+<div class="endpoint" id="otp-verify">
+  <div class="endpoint-header">
+    <span class="badge badge-post">POST</span>
+    <span class="path">/auth/otp/verify</span>
+    <span class="desc">OTP kodni tasdiqlash va token olish</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Request body</h3>
+    <table>
+      <tr><th>Maydon</th><th>Tur</th><th>Holat</th><th>Tavsif</th></tr>
+      <tr><td>phone</td><td>string</td><td><span class="req">Majburiy</span></td><td>Telefon raqam</td></tr>
+      <tr><td>code</td><td>string</td><td><span class="req">Majburiy</span></td><td>6 xonali SMS kodi</td></tr>
+    </table>
+    <pre>POST /api/auth/otp/verify
+Content-Type: application/json
+
+{
+  <span class="k">"phone"</span>: <span class="s">"+998901234567"</span>,
+  <span class="k">"code"</span>:  <span class="s">"123456"</span>
+}</pre>
+    <h3>Response 200</h3>
+    <pre>{
+  <span class="k">"token"</span>: <span class="s">"1|abc123..."</span>,
+  <span class="k">"user"</span>: {
+    <span class="k">"id"</span>:    <span class="n">42</span>,
+    <span class="k">"name"</span>:  <span class="s">"Mijoz"</span>,
+    <span class="k">"phone"</span>: <span class="s">"+998901234567"</span>,
+    <span class="k">"role"</span>:  <span class="s">"customer"</span>
+  }
+}</pre>
+    <p>Foydalanuvchi birinchi marta kirganda avtomatik ro'yxatdan o'tkaziladi.</p>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div class="endpoint" id="login">
+  <div class="endpoint-header">
+    <span class="badge badge-post">POST</span>
+    <span class="path">/auth/login</span>
+    <span class="desc">Email va parol bilan kirish</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Request body</h3>
+    <table>
+      <tr><th>Maydon</th><th>Tur</th><th>Holat</th><th>Tavsif</th></tr>
+      <tr><td>email</td><td>string</td><td><span class="req">Majburiy</span></td><td>Email manzil</td></tr>
+      <tr><td>password</td><td>string</td><td><span class="req">Majburiy</span></td><td>Parol</td></tr>
+    </table>
+    <pre>POST /api/auth/login
+Content-Type: application/json
+
+{
+  <span class="k">"email"</span>:    <span class="s">"user@example.com"</span>,
+  <span class="k">"password"</span>: <span class="s">"secret123"</span>
+}</pre>
+    <h3>Response 200</h3>
+    <pre>{
+  <span class="k">"token"</span>: <span class="s">"1|abc123..."</span>,
+  <span class="k">"user"</span>: {
+    <span class="k">"id"</span>:    <span class="n">1</span>,
+    <span class="k">"name"</span>:  <span class="s">"Admin"</span>,
+    <span class="k">"email"</span>: <span class="s">"user@example.com"</span>,
+    <span class="k">"role"</span>:  <span class="s">"customer"</span>
+  }
+}</pre>
+  </div>
+</div>
+
+<!-- ME -->
+<div class="endpoint" id="me">
+  <div class="endpoint-header">
+    <span class="badge badge-get">GET</span>
+    <span class="path">/auth/me</span>
+    <span class="auth-tag">🔒 Auth</span>
+    <span class="desc">Joriy foydalanuvchi ma'lumotlari</span>
+  </div>
+  <div class="endpoint-body">
+    <pre>GET /api/auth/me
+Authorization: Bearer &lt;token&gt;</pre>
+    <h3>Response 200</h3>
+    <pre>{
+  <span class="k">"id"</span>:    <span class="n">42</span>,
+  <span class="k">"name"</span>:  <span class="s">"Alibek"</span>,
+  <span class="k">"phone"</span>: <span class="s">"+998901234567"</span>,
+  <span class="k">"role"</span>:  <span class="s">"customer"</span>
+}</pre>
+  </div>
+</div>
+
+<!-- LOGOUT -->
+<div class="endpoint" id="logout">
+  <div class="endpoint-header">
+    <span class="badge badge-post">POST</span>
+    <span class="path">/auth/logout</span>
+    <span class="auth-tag">🔒 Auth</span>
+    <span class="desc">Chiqish (token o'chirish)</span>
+  </div>
+  <div class="endpoint-body">
+    <pre>POST /api/auth/logout
+Authorization: Bearer &lt;token&gt;</pre>
+    <h3>Response 200</h3>
+    <pre>{ <span class="k">"message"</span>: <span class="s">"Chiqildi."</span> }</pre>
+  </div>
+</div>
+
+<!-- ═══ CATALOG ══════════════════════════════════════════════════ -->
+<h2>Katalog</h2>
+
+<!-- RESTAURANTS LIST -->
+<div class="endpoint" id="restaurants">
+  <div class="endpoint-header">
+    <span class="badge badge-get">GET</span>
+    <span class="path">/catalog/restaurants</span>
+    <span class="desc">Restoranlar ro'yxati</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Query parametrlar</h3>
+    <table>
+      <tr><th>Parametr</th><th>Tur</th><th>Holat</th><th>Tavsif</th></tr>
+      <tr><td>search</td><td>string</td><td><span class="opt">Ixtiyoriy</span></td><td>Nom bo'yicha qidirish</td></tr>
+      <tr><td>sort</td><td>string</td><td><span class="opt">Ixtiyoriy</span></td><td><code>name_asc</code> | <code>name_desc</code></td></tr>
+      <tr><td>per_page</td><td>integer</td><td><span class="opt">Ixtiyoriy</span></td><td>Sahifadagi elementlar soni (standart: 20)</td></tr>
+      <tr><td>page</td><td>integer</td><td><span class="opt">Ixtiyoriy</span></td><td>Sahifa raqami</td></tr>
+      <tr><td>lang</td><td>string</td><td><span class="opt">Ixtiyoriy</span></td><td><code>uz</code> | <code>en</code> | <code>tr</code></td></tr>
+    </table>
+    <pre>GET /api/catalog/restaurants?search=pizza&amp;sort=name_asc&amp;lang=uz</pre>
+    <h3>Response 200</h3>
+    <pre>{
+  <span class="k">"data"</span>: [
+    {
+      <span class="k">"id"</span>:          <span class="n">1</span>,
+      <span class="k">"name"</span>:        <span class="s">"Pizza House"</span>,
+      <span class="k">"description"</span>: <span class="s">"Eng mazali pizza"</span>,
+      <span class="k">"address"</span>:     <span class="s">"Toshkent, Chilonzor"</span>,
+      <span class="k">"lat"</span>:          <span class="n">41.2995</span>,
+      <span class="k">"lng"</span>:          <span class="n">69.2401</span>,
+      <span class="k">"logo"</span>:        <span class="s">"https://your-domain.com/storage/restaurants/logos/abc.jpg"</span>,
+      <span class="k">"cover_image"</span>: <span class="s">"https://your-domain.com/storage/..."</span>,
+      <span class="k">"phone"</span>:       <span class="s">"+998901234567"</span>,
+      <span class="k">"status"</span>:      <span class="s">"active"</span>
+    }
+  ],
+  <span class="k">"meta"</span>: {
+    <span class="k">"current_page"</span>: <span class="n">1</span>,
+    <span class="k">"last_page"</span>:    <span class="n">3</span>,
+    <span class="k">"per_page"</span>:     <span class="n">20</span>,
+    <span class="k">"total"</span>:        <span class="n">52</span>
+  }
+}</pre>
+  </div>
+</div>
+
+<!-- RESTAURANT SHOW -->
+<div class="endpoint" id="restaurant-show">
+  <div class="endpoint-header">
+    <span class="badge badge-get">GET</span>
+    <span class="path">/catalog/restaurants/{id}</span>
+    <span class="desc">Restoran + barcha kategoriya va mahsulotlari</span>
+  </div>
+  <div class="endpoint-body">
+    <pre>GET /api/catalog/restaurants/1?lang=uz</pre>
+    <h3>Response 200</h3>
+    <pre>{
+  <span class="k">"data"</span>: {
+    <span class="k">"id"</span>: <span class="n">1</span>, <span class="k">"name"</span>: <span class="s">"Pizza House"</span>, <span class="c">// ... restoran maydonlari</span>
+    <span class="k">"categories"</span>: [
+      {
+        <span class="k">"id"</span>:         <span class="n">2</span>,
+        <span class="k">"name"</span>:       <span class="s">"Pizzalar"</span>,
+        <span class="k">"sort_order"</span>: <span class="n">1</span>,
+        <span class="k">"products"</span>: [
+          {
+            <span class="k">"id"</span>:             <span class="n">10</span>,
+            <span class="k">"name"</span>:           <span class="s">"Margarita"</span>,
+            <span class="k">"description"</span>:   <span class="s">"Klassik pizza"</span>,
+            <span class="k">"price"</span>:         <span class="n">35000</span>,
+            <span class="k">"original_price"</span>: <span class="b">null</span>,
+            <span class="k">"unit"</span>:           <span class="s">"dona"</span>,
+            <span class="k">"is_available"</span>:  <span class="b">true</span>,
+            <span class="k">"image"</span>:         <span class="s">"https://..."</span>,
+            <span class="k">"images"</span>:        [<span class="s">"https://..."</span>, <span class="s">"https://..."</span>]
+          }
+        ]
+      }
+    ]
+  }
+}</pre>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<div class="endpoint" id="categories">
+  <div class="endpoint-header">
+    <span class="badge badge-get">GET</span>
+    <span class="path">/catalog/categories</span>
+    <span class="desc">Barcha kategoriyalar (sort_order bo'yicha)</span>
+  </div>
+  <div class="endpoint-body">
+    <pre>GET /api/catalog/categories?lang=uz</pre>
+    <h3>Response 200</h3>
+    <pre>{
+  <span class="k">"data"</span>: [
+    { <span class="k">"id"</span>: <span class="n">1</span>, <span class="k">"name"</span>: <span class="s">"Pizzalar"</span>,   <span class="k">"sort_order"</span>: <span class="n">1</span> },
+    { <span class="k">"id"</span>: <span class="n">2</span>, <span class="k">"name"</span>: <span class="s">"Ichimliklar"</span>, <span class="k">"sort_order"</span>: <span class="n">2</span> }
+  ]
+}</pre>
+  </div>
+</div>
+
+<!-- PRODUCTS LIST -->
+<div class="endpoint" id="products">
+  <div class="endpoint-header">
+    <span class="badge badge-get">GET</span>
+    <span class="path">/catalog/products</span>
+    <span class="desc">Mahsulotlar ro'yxati — filter, qidirish, saralash</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Query parametrlar</h3>
+    <table>
+      <tr><th>Parametr</th><th>Tur</th><th>Holat</th><th>Tavsif</th></tr>
+      <tr><td>restaurant_id</td><td>integer</td><td><span class="opt">Ixtiyoriy</span></td><td>Restoran bo'yicha filterlash</td></tr>
+      <tr><td>category_id</td><td>integer</td><td><span class="opt">Ixtiyoriy</span></td><td>Kategoriya bo'yicha filterlash</td></tr>
+      <tr><td>search</td><td>string</td><td><span class="opt">Ixtiyoriy</span></td><td>Nom bo'yicha qidirish (barcha tillarda)</td></tr>
+      <tr><td>sort</td><td>string</td><td><span class="opt">Ixtiyoriy</span></td><td><code>price_asc</code> | <code>price_desc</code> | <code>name_asc</code> | <code>name_desc</code></td></tr>
+      <tr><td>per_page</td><td>integer</td><td><span class="opt">Ixtiyoriy</span></td><td>Sahifadagi elementlar (standart: 20)</td></tr>
+      <tr><td>page</td><td>integer</td><td><span class="opt">Ixtiyoriy</span></td><td>Sahifa raqami</td></tr>
+      <tr><td>lang</td><td>string</td><td><span class="opt">Ixtiyoriy</span></td><td><code>uz</code> | <code>en</code> | <code>tr</code></td></tr>
+    </table>
+    <pre>GET /api/catalog/products?restaurant_id=1&amp;category_id=2&amp;search=osh&amp;sort=price_asc&amp;lang=uz</pre>
+    <h3>Response 200</h3>
+    <pre>{
+  <span class="k">"data"</span>: [
+    {
+      <span class="k">"id"</span>:             <span class="n">5</span>,
+      <span class="k">"restaurant_id"</span>:  <span class="n">1</span>,
+      <span class="k">"category_id"</span>:    <span class="n">2</span>,
+      <span class="k">"name"</span>:           <span class="s">"Ko'cha osh"</span>,
+      <span class="k">"description"</span>:   <span class="s">"Mazali palov"</span>,
+      <span class="k">"price"</span>:         <span class="n">25000</span>,
+      <span class="k">"original_price"</span>: <span class="n">30000</span>,
+      <span class="k">"unit"</span>:           <span class="s">"porsiya"</span>,
+      <span class="k">"is_available"</span>:  <span class="b">true</span>,
+      <span class="k">"image"</span>:         <span class="s">"https://your-domain.com/storage/products/abc.jpg"</span>,
+      <span class="k">"images"</span>:        [<span class="s">"https://..."</span>]
+    }
+  ],
+  <span class="k">"meta"</span>: { <span class="k">"current_page"</span>: <span class="n">1</span>, <span class="k">"last_page"</span>: <span class="n">2</span>, <span class="k">"per_page"</span>: <span class="n">20</span>, <span class="k">"total"</span>: <span class="n">35</span> }
+}</pre>
+  </div>
+</div>
+
+<!-- PRODUCT SHOW -->
+<div class="endpoint" id="product-show">
+  <div class="endpoint-header">
+    <span class="badge badge-get">GET</span>
+    <span class="path">/catalog/products/{id}</span>
+    <span class="desc">Mahsulot tafsiloti</span>
+  </div>
+  <div class="endpoint-body">
+    <pre>GET /api/catalog/products/5?lang=uz</pre>
+    <h3>Response 200</h3>
+    <pre>{
+  <span class="k">"data"</span>: {
+    <span class="k">"id"</span>: <span class="n">5</span>, <span class="k">"name"</span>: <span class="s">"Ko'cha osh"</span>,
+    <span class="k">"price"</span>: <span class="n">25000</span>, <span class="k">"images"</span>: [<span class="s">"https://..."</span>, <span class="s">"https://..."</span>]
+    <span class="c">// ... barcha maydonlar</span>
+  }
+}</pre>
+    <p>Mahsulot mavjud bo'lmasa yoki o'chirilgan bo'lsa: <code>404 Not Found</code></p>
+  </div>
+</div>
+
+<!-- ═══ ORDERS ═══════════════════════════════════════════════════ -->
+<h2>Buyurtmalar</h2>
+<div class="info">
+  Barcha buyurtma endpointlari <strong>auth:sanctum</strong> talab qiladi — <code>Authorization: Bearer &lt;token&gt;</code>.
+</div>
+
+<!-- ORDER STORE -->
+<div class="endpoint" id="order-store">
+  <div class="endpoint-header">
+    <span class="badge badge-post">POST</span>
+    <span class="path">/orders</span>
+    <span class="auth-tag">🔒 Auth</span>
+    <span class="desc">Yangi buyurtma yaratish</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Request body</h3>
+    <table>
+      <tr><th>Maydon</th><th>Tur</th><th>Holat</th><th>Tavsif</th></tr>
+      <tr><td>restaurant_id</td><td>integer</td><td><span class="req">Majburiy</span></td><td>Restoran ID si</td></tr>
+      <tr><td>items</td><td>array</td><td><span class="req">Majburiy</span></td><td>Kamida 1 ta mahsulot</td></tr>
+      <tr><td>items[].product_id</td><td>integer</td><td><span class="req">Majburiy</span></td><td>Mahsulot ID si</td></tr>
+      <tr><td>items[].quantity</td><td>integer</td><td><span class="req">Majburiy</span></td><td>Miqdori (1–99)</td></tr>
+      <tr><td>payment_method</td><td>string</td><td><span class="req">Majburiy</span></td><td><code>cash</code> | <code>card</code></td></tr>
+      <tr><td>delivery_address</td><td>string</td><td><span class="opt">Ixtiyoriy</span></td><td>Yetkazib berish manzili</td></tr>
+      <tr><td>delivery_lat</td><td>number</td><td><span class="opt">Ixtiyoriy</span></td><td>Kenglik (latitude)</td></tr>
+      <tr><td>delivery_lng</td><td>number</td><td><span class="opt">Ixtiyoriy</span></td><td>Uzunlik (longitude)</td></tr>
+      <tr><td>note</td><td>string</td><td><span class="opt">Ixtiyoriy</span></td><td>Izoh (max 500 belgi)</td></tr>
+    </table>
+    <pre>POST /api/orders
+Authorization: Bearer &lt;token&gt;
+Content-Type: application/json
+
+{
+  <span class="k">"restaurant_id"</span>:    <span class="n">1</span>,
+  <span class="k">"items"</span>: [
+    { <span class="k">"product_id"</span>: <span class="n">5</span>, <span class="k">"quantity"</span>: <span class="n">2</span> },
+    { <span class="k">"product_id"</span>: <span class="n">8</span>, <span class="k">"quantity"</span>: <span class="n">1</span> }
+  ],
+  <span class="k">"payment_method"</span>:   <span class="s">"cash"</span>,
+  <span class="k">"delivery_address"</span>: <span class="s">"Toshkent, Mirzo Ulug'bek, 12-uy"</span>,
+  <span class="k">"delivery_lat"</span>:    <span class="n">41.3123</span>,
+  <span class="k">"delivery_lng"</span>:    <span class="n">69.2987</span>,
+  <span class="k">"note"</span>:             <span class="s">"Qo'ng'iroq qiling"</span>
+}</pre>
+    <h3>Response 201</h3>
+    <pre>{
+  <span class="k">"data"</span>: {
+    <span class="k">"id"</span>:               <span class="n">101</span>,
+    <span class="k">"status"</span>:          <span class="s">"pending"</span>,
+    <span class="k">"payment_method"</span>:  <span class="s">"cash"</span>,
+    <span class="k">"payment_status"</span>:  <span class="s">"pending"</span>,
+    <span class="k">"subtotal"</span>:        <span class="n">85000</span>,
+    <span class="k">"delivery_fee"</span>:    <span class="n">0</span>,
+    <span class="k">"total"</span>:           <span class="n">85000</span>,
+    <span class="k">"delivery_address"</span>: <span class="s">"Toshkent, ..."</span>,
+    <span class="k">"can_cancel"</span>:     <span class="b">true</span>,
+    <span class="k">"created_at"</span>:     <span class="s">"2026-05-04T10:30:00+05:00"</span>,
+    <span class="k">"restaurant"</span>:     { <span class="k">"id"</span>: <span class="n">1</span>, <span class="k">"name"</span>: <span class="s">"Pizza House"</span>, <span class="k">"logo"</span>: <span class="s">"https://..."</span> },
+    <span class="k">"items"</span>: [
+      {
+        <span class="k">"id"</span>:         <span class="n">201</span>,
+        <span class="k">"product_id"</span>: <span class="n">5</span>,
+        <span class="k">"name"</span>:       <span class="s">"Ko'cha osh"</span>,
+        <span class="k">"price"</span>:      <span class="n">25000</span>,
+        <span class="k">"quantity"</span>:   <span class="n">2</span>,
+        <span class="k">"unit"</span>:       <span class="s">"porsiya"</span>,
+        <span class="k">"subtotal"</span>:   <span class="n">50000</span>,
+        <span class="k">"image"</span>:      <span class="s">"https://..."</span>
+      }
+    ]
+  }
+}</pre>
+    <p>Mahsulotlar bir xil restorandanmasligi yoki mavjud emasligida: <code>422</code></p>
+  </div>
+</div>
+
+<!-- ORDER ACTIVE -->
+<div class="endpoint" id="order-active">
+  <div class="endpoint-header">
+    <span class="badge badge-get">GET</span>
+    <span class="path">/orders/active</span>
+    <span class="auth-tag">🔒 Auth</span>
+    <span class="desc">Hozirda faol (yakunlanmagan) buyurtmalar</span>
+  </div>
+  <div class="endpoint-body">
+    <p>Statusi <code>delivered</code> yoki <code>cancelled</code> bo'lmagan barcha buyurtmalar qaytariladi.</p>
+    <pre>GET /api/orders/active
+Authorization: Bearer &lt;token&gt;</pre>
+    <h3>Response 200</h3>
+    <pre>{
+  <span class="k">"data"</span>: [
+    {
+      <span class="k">"id"</span>:          <span class="n">101</span>,
+      <span class="k">"status"</span>:     <span class="s">"preparing"</span>,
+      <span class="k">"can_cancel"</span>: <span class="b">false</span>,
+      <span class="c">// ...</span>
+    }
+  ]
+}</pre>
+    <h3>Buyurtma statuslari</h3>
+    <table>
+      <tr><th>Status</th><th>Tavsif</th><th>Bekor qilish</th></tr>
+      <tr><td>pending</td><td>Yangi buyurtma, restoran kutmoqda</td><td>✅ Mumkin</td></tr>
+      <tr><td>confirmed</td><td>Restoran qabul qildi</td><td>✅ Mumkin</td></tr>
+      <tr><td>preparing</td><td>Tayyorlanmoqda</td><td>❌ Mumkin emas</td></tr>
+      <tr><td>ready</td><td>Tayyor, kuryer kutmoqda</td><td>❌ Mumkin emas</td></tr>
+      <tr><td>delivering</td><td>Kuryer yetkazmoqda</td><td>❌ Mumkin emas</td></tr>
+      <tr><td>delivered</td><td>Yetkazildi ✓</td><td>❌ Mumkin emas</td></tr>
+      <tr><td>cancelled</td><td>Bekor qilindi</td><td>—</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ORDER SHOW -->
+<div class="endpoint" id="order-show">
+  <div class="endpoint-header">
+    <span class="badge badge-get">GET</span>
+    <span class="path">/orders/{id}</span>
+    <span class="auth-tag">🔒 Auth</span>
+    <span class="desc">Bitta buyurtma holati va tafsilotlari</span>
+  </div>
+  <div class="endpoint-body">
+    <pre>GET /api/orders/101
+Authorization: Bearer &lt;token&gt;</pre>
+    <h3>Response 200</h3>
+    <p>Javob formati <code>POST /orders</code> javobiдek bir xil.</p>
+    <p>Buyurtma boshqa foydalanuvchiga tegishli bo'lsa yoki topilmasa: <code>404</code></p>
+  </div>
+</div>
+
+<!-- ORDER CANCEL -->
+<div class="endpoint" id="order-cancel">
+  <div class="endpoint-header">
+    <span class="badge badge-post">POST</span>
+    <span class="path">/orders/{id}/cancel</span>
+    <span class="auth-tag">🔒 Auth</span>
+    <span class="desc">Buyurtmani bekor qilish</span>
+  </div>
+  <div class="endpoint-body">
+    <p>Faqat <code>pending</code> va <code>confirmed</code> statusdagi buyurtmalarni bekor qilsa bo'ladi.</p>
+    <pre>POST /api/orders/101/cancel
+Authorization: Bearer &lt;token&gt;</pre>
+    <h3>Response 200 — muvaffaqiyatli bekor qilindi</h3>
+    <pre>{
+  <span class="k">"data"</span>: {
+    <span class="k">"id"</span>:     <span class="n">101</span>,
+    <span class="k">"status"</span>: <span class="s">"cancelled"</span>,
+    <span class="c">// ...</span>
+  }
+}</pre>
+    <h3>Response 422 — bekor qilib bo'lmaydi</h3>
+    <pre>{
+  <span class="k">"message"</span>: <span class="s">"Bu buyurtmani bekor qilib bo'lmaydi. Restoran allaqachon tayyorlashni boshlagan."</span>
+}</pre>
+  </div>
+</div>
+
+<!-- ORDER HISTORY -->
+<div class="endpoint" id="order-history">
+  <div class="endpoint-header">
+    <span class="badge badge-get">GET</span>
+    <span class="path">/orders</span>
+    <span class="auth-tag">🔒 Auth</span>
+    <span class="desc">Buyurtmalar tarixi (eng yangi birinchi)</span>
+  </div>
+  <div class="endpoint-body">
+    <h3>Query parametrlar</h3>
+    <table>
+      <tr><th>Parametr</th><th>Tur</th><th>Holat</th><th>Tavsif</th></tr>
+      <tr><td>per_page</td><td>integer</td><td><span class="opt">Ixtiyoriy</span></td><td>Sahifadagi elementlar (standart: 10)</td></tr>
+      <tr><td>page</td><td>integer</td><td><span class="opt">Ixtiyoriy</span></td><td>Sahifa raqami</td></tr>
+    </table>
+    <pre>GET /api/orders?per_page=10&amp;page=1
+Authorization: Bearer &lt;token&gt;</pre>
+    <h3>Response 200</h3>
+    <pre>{
+  <span class="k">"data"</span>: [
+    { <span class="k">"id"</span>: <span class="n">101</span>, <span class="k">"status"</span>: <span class="s">"delivered"</span>, <span class="k">"total"</span>: <span class="n">85000</span>, <span class="c">// ...</span> },
+    { <span class="k">"id"</span>: <span class="n">98</span>,  <span class="k">"status"</span>: <span class="s">"cancelled"</span>, <span class="k">"total"</span>: <span class="n">45000</span>, <span class="c">// ...</span> }
+  ],
+  <span class="k">"meta"</span>: { <span class="k">"current_page"</span>: <span class="n">1</span>, <span class="k">"last_page"</span>: <span class="n">5</span>, <span class="k">"per_page"</span>: <span class="n">10</span>, <span class="k">"total"</span>: <span class="n">47</span> }
+}</pre>
+  </div>
+</div>
+
+<!-- Footer -->
+<p style="margin-top:60px;color:var(--gray);font-size:13px;border-top:1px solid var(--border);padding-top:20px;">
+  VipOnlineMarket API v1.0 &nbsp;·&nbsp; Barcha so'rovlar HTTPS orqali yuborilishi kerak.
+</p>
+</main>
+</body>
+</html>
