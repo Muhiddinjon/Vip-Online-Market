@@ -9,6 +9,7 @@ return [
         'group_orders'     => 'Orders',
         'categories'       => 'Categories',
         'products'         => 'Products',
+        'units'            => 'Units',
         'restaurants'      => 'Restaurants',
         'couriers'         => 'Couriers',
         'users'            => 'Users',
@@ -117,6 +118,12 @@ return [
         'payment_card'      => 'Card',
         'address'           => 'Address',
         'date'              => 'Date',
+    ],
+
+    // Unit
+    'unit' => [
+        'label'  => 'Unit',
+        'create' => 'Add Unit',
     ],
 
     // Product

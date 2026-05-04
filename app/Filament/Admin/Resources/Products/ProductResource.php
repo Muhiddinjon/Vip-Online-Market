@@ -4,7 +4,9 @@ namespace App\Filament\Admin\Resources\Products;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Restaurant;
+use App\Models\Unit;
 use Filament\Actions\DeleteAction;
+use Illuminate\Support\Facades\Schema as DbSchema;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteAction;
@@ -89,15 +91,14 @@ class ProductResource extends Resource
                             ->helperText(__('admin.product.original_price_hint')),
                     ]),
                     Grid::make(2)->components([
-                        Select::make('unit')
+                        Select::make(DbSchema::hasColumn('products', 'unit_id') ? 'unit_id' : 'unit')
                             ->label(__('admin.product.unit'))
-                            ->options([
-                                'dona'    => __('admin.product.unit_dona'),
-                                'porsiya' => __('admin.product.unit_porsiya'),
-                                'kg'      => 'Kg',
-                                'gramm'   => __('admin.product.unit_gramm'),
-                                'litr'    => __('admin.product.unit_litr'),
-                            ])->default('dona')->required(),
+                            ->options(fn () => Unit::active()->get()
+                                ->mapWithKeys(fn ($u) => [
+                                    DbSchema::hasColumn('products', 'unit_id') ? $u->id : $u->slug =>
+                                    $u->name[app()->getLocale()] ?? $u->name['uz'] ?? $u->name['en'] ?? '—'
+                                ]))
+                            ->required(),
                         Toggle::make('is_available')
                             ->label(__('admin.product.available'))
                             ->default(true)->inline(false),
