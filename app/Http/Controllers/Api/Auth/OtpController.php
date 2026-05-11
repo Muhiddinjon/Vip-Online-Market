@@ -27,6 +27,7 @@ class OtpController extends Controller
         try
         {
             $url = "https://send.smsxabar.uz/broker-api/send";
+            $phone = $request->phone;
 
             $headers = [
                 "Content-Type" => "application/json; charset=utf-8",
