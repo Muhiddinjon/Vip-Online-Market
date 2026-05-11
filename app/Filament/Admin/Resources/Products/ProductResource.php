@@ -105,7 +105,7 @@ class ProductResource extends Resource
                 ]),
 
                 Section::make(__('admin.product.section_images'))->components([
-                    FileUpload::make('images')
+                    FileUpload::make('uploaded_images')
                         ->label(__('admin.product.images'))
                         ->multiple()
                         ->minFiles(1)
@@ -166,12 +166,12 @@ class ProductResource extends Resource
                     ->label('')
                     ->tooltip(__('admin.common.edit'))
                     ->mutateRecordDataUsing(function (array $data, Product $record): array {
-                        $data['images'] = $record->images()->pluck('path')->toArray();
+                        $data['uploaded_images'] = $record->images()->pluck('path')->toArray();
                         return $data;
                     })
                     ->after(function (Product $record, array $data): void {
                         $record->images()->delete();
-                        $paths = array_values(array_filter($data['images'] ?? []));
+                        $paths = array_values(array_filter($data['uploaded_images'] ?? []));
                         foreach ($paths as $i => $path) {
                             $record->images()->create(['path' => $path, 'sort_order' => $i]);
                         }
