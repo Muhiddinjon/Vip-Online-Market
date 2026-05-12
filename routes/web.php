@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\OrderPrintController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,4 +15,8 @@ Route::post('/locale/switch', function (Request $request) {
     }
     return back();
 })->name('locale.switch');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/orders/{order}/print', [OrderPrintController::class, 'show'])->name('orders.print');
+});
 

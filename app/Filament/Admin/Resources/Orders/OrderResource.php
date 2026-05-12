@@ -1,15 +1,17 @@
 <?php
+
 namespace App\Filament\Admin\Resources\Orders;
 
 use App\Models\Order;
+use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\ForceDeleteAction;
-use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
-use Filament\Actions\RestoreBulkAction;
-use Filament\Actions\ViewAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Forms\Components\Textarea;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Actions as SchemaActions;
+use Filament\Schemas\Components\Section as InfoSection;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
@@ -50,7 +52,8 @@ class OrderResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->withoutGlobalScopes([SoftDeletingScope::class]);
+            ->withoutGlobalScopes([SoftDeletingScope::class])
+            ->with(['customer.user', 'items', 'restaurant', 'courier.user']);
     }
 
     public static function form(Schema $schema): Schema { return $schema->components([]); }
@@ -64,15 +67,21 @@ class OrderResource extends Resource
                 TextColumn::make('restaurant.name')->label(__('admin.order.restaurant'))->searchable(),
                 TextColumn::make('courier.user.name')->label(__('admin.order.courier'))->default('—'),
                 TextColumn::make('status')->label('Status')->badge()
-                    ->color(fn ($state) => match($state) {
-                        'pending'    => 'gray',    'confirmed'  => 'info',
-                        'preparing'  => 'warning', 'ready'      => 'primary',
-                        'delivering' => 'indigo',  'delivered'  => 'success',
-                        'cancelled'  => 'danger',  default      => 'gray',
+                    ->color(fn ($state) => match ($state) {
+                        'pending'    => 'warning',
+                        'confirmed'  => 'info',
+                        'rejected'   => 'danger',
+                        'preparing'  => 'primary',
+                        'ready'      => 'success',
+                        'delivering' => 'indigo',
+                        'delivered'  => 'success',
+                        'cancelled'  => 'danger',
+                        default      => 'gray',
                     })
-                    ->formatStateUsing(fn ($state) => match($state) {
+                    ->formatStateUsing(fn ($state) => match ($state) {
                         'pending'    => __('admin.order.status_pending'),
                         'confirmed'  => __('admin.order.status_confirmed'),
+                        'rejected'   => __('admin.order.status_rejected'),
                         'preparing'  => __('admin.order.status_preparing'),
                         'ready'      => __('admin.order.status_ready'),
                         'delivering' => __('admin.order.status_delivering'),
@@ -95,6 +104,7 @@ class OrderResource extends Resource
                 SelectFilter::make('status')->label('Status')->options([
                     'pending'    => __('admin.order.status_pending'),
                     'confirmed'  => __('admin.order.status_confirmed'),
+                    'rejected'   => __('admin.order.status_rejected'),
                     'preparing'  => __('admin.order.status_preparing'),
                     'ready'      => __('admin.order.status_ready'),
                     'delivering' => __('admin.order.status_delivering'),
@@ -105,19 +115,113 @@ class OrderResource extends Resource
                     ->options(['cash' => __('admin.order.payment_cash'), 'card' => __('admin.order.payment_card')]),
             ])
             ->actions([
+                // Icon only: tafsilotlar
+                Action::make('details')
+                    ->label('')
+                    ->tooltip(__('admin.order.details'))
+                    ->icon('heroicon-o-eye')
+                    ->color('info')
+                    ->modalHeading(fn (Order $record) => __('admin.order.details') . ' #' . $record->id)
+                    ->modalSubmitAction(false)
+                    ->infolist([
+                        InfoSection::make(__('admin.order.customer_info'))->schema([
+                            TextEntry::make('customer.user.name')->label(__('admin.order.customer')),
+                            TextEntry::make('customer.user.phone')->label(__('admin.order.phone')),
+                            TextEntry::make('delivery_address')
+                                ->label(__('admin.order.address'))
+                                ->columnSpanFull(),
+                            SchemaActions::make([
+                                Action::make('view_map')
+                                    ->label(__('admin.order.view_on_map'))
+                                    ->icon('heroicon-o-map-pin')
+                                    ->color('info')
+                                    ->url(fn (Order $record) => $record->delivery_lat && $record->delivery_lng
+                                        ? "https://www.google.com/maps/search/?api=1&query={$record->delivery_lat},{$record->delivery_lng}"
+                                        : null)
+                                    ->openUrlInNewTab()
+                                    ->hidden(fn (Order $record) => ! $record->delivery_lat || ! $record->delivery_lng),
+                            ])->columnSpanFull(),
+                            TextEntry::make('note')->label(__('admin.order.note'))->placeholder('—')->columnSpanFull(),
+                            TextEntry::make('reject_reason')->label(__('admin.order.reject_reason'))
+                                ->placeholder('—')->columnSpanFull()
+                                ->hidden(fn (Order $record) => empty($record->reject_reason)),
+                        ])->columns(2),
+                        InfoSection::make(__('admin.order.items'))->schema([
+                            RepeatableEntry::make('items')->schema([
+                                TextEntry::make('name')->label(__('admin.order.item_name')),
+                                TextEntry::make('quantity')->label(__('admin.order.quantity')),
+                                TextEntry::make('price')->label(__('admin.order.price'))->money('UZS'),
+                                TextEntry::make('unit')->label(__('admin.order.unit')),
+                            ])->columns(4),
+                        ]),
+                    ]),
+
+                // Icon only: chop etish
+                Action::make('print')
+                    ->label('')
+                    ->tooltip(__('admin.order.print'))
+                    ->icon('heroicon-o-printer')
+                    ->color('gray')
+                    ->url(fn (Order $record) => route('orders.print', $record))
+                    ->openUrlInNewTab(),
+
+                // To'g'ridan-to'g'ri: tasdiqlash (faqat pending da)
+                Action::make('confirm')
+                    ->label(__('admin.order.status_confirmed'))
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->visible(fn (Order $record) => $record->status === 'pending')
+                    ->requiresConfirmation()
+                    ->action(fn (Order $record) => $record->update(['status' => 'confirmed'])),
+
+                // To'g'ridan-to'g'ri: rad etish (pending va confirmed da)
+                Action::make('reject')
+                    ->label(__('admin.order.status_rejected'))
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->visible(fn (Order $record) => in_array($record->status, ['pending', 'confirmed']))
+                    ->form([
+                        Textarea::make('reason')
+                            ->label(__('admin.order.reject_reason'))
+                            ->required()
+                            ->rows(3),
+                    ])
+                    ->action(fn (Order $record, array $data) => $record->update([
+                        'status'        => 'rejected',
+                        'reject_reason' => $data['reason'],
+                    ])),
+
+                Action::make('prepare')
+                    ->label(__('admin.order.status_preparing'))
+                    ->icon('heroicon-o-fire')
+                    ->color('primary')
+                    ->visible(fn (Order $record) => $record->status === 'confirmed')
+                    ->requiresConfirmation()
+                    ->action(fn (Order $record) => $record->update(['status' => 'preparing'])),
+
+                Action::make('ready')
+                    ->label(__('admin.order.status_ready'))
+                    ->icon('heroicon-o-check-badge')
+                    ->color('success')
+                    ->visible(fn (Order $record) => $record->status === 'preparing')
+                    ->requiresConfirmation()
+                    ->action(fn (Order $record) => $record->update(['status' => 'ready'])),
+
+                Action::make('deliver')
+                    ->label(__('admin.order.status_delivering'))
+                    ->icon('heroicon-o-truck')
+                    ->color('indigo')
+                    ->visible(fn (Order $record) => $record->status === 'ready')
+                    ->requiresConfirmation()
+                    ->action(fn (Order $record) => $record->update(['status' => 'delivering'])),
+
+                // 3 nuqta ichida: faqat boshqaruv amallar
                 ActionGroup::make([
-                    ViewAction::make()->label(__('admin.common.edit')),
                     RestoreAction::make()->label(__('admin.common.restore')),
                     ForceDeleteAction::make()->label(__('admin.common.force_delete')),
                 ]),
             ])
-            ->bulkActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make()->label(__('admin.common.delete')),
-                    RestoreBulkAction::make()->label(__('admin.common.restore')),
-                    ForceDeleteBulkAction::make()->label(__('admin.common.force_delete')),
-                ]),
-            ])
+            ->bulkActions([])
             ->paginated([25, 50, 100]);
     }
 

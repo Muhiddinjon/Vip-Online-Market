@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Http\Middleware\SetLocale;
 use App\Filament\Restaurant\Widgets\RestaurantStats;
+use Filament\View\PanelsRenderHook;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -31,6 +32,7 @@ class RestaurantPanelProvider extends PanelProvider
             ->darkMode(true)
             ->colors(['primary' => Color::Orange])
             ->brandName('VipOnlineMarket — Restoran')
+            ->renderHook(PanelsRenderHook::BODY_END, fn (): string => view('orders.order-alert')->render())
             ->discoverResources(in: app_path('Filament/Restaurant/Resources'), for: 'App\Filament\Restaurant\Resources')
             ->discoverPages(in: app_path('Filament/Restaurant/Pages'), for: 'App\Filament\Restaurant\Pages')
             ->pages([Dashboard::class])
