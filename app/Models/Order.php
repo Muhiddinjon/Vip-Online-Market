@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Order extends Model
 {
     use SoftDeletes;
-    protected $fillable = ['customer_id','restaurant_id','courier_id','status','payment_method','payment_status','subtotal','delivery_fee','total','delivery_address','delivery_lat','delivery_lng','note'];
+    protected $fillable = ['customer_id','restaurant_id','courier_id','status','payment_method','payment_status','subtotal','delivery_fee','total','delivery_address','delivery_lat','delivery_lng','note','reject_reason'];
     protected $casts = [
         'subtotal'     => 'float',
         'delivery_fee' => 'float',
