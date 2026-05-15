@@ -21,9 +21,10 @@ class ListProducts extends ListRecords
                     return $data;
                 })
                 ->after(function (Product $record, array $data): void {
-                    $path = $data['image'] ?? null;
-                    if ($path) {
-                        $record->images()->create(['path' => $path, 'sort_order' => 0]);
+                    foreach ($data['images'] ?? [] as $i => $path) {
+                        if ($path) {
+                            $record->images()->create(['path' => $path, 'sort_order' => $i]);
+                        }
                     }
                 }),
         ];

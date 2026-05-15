@@ -8,6 +8,13 @@ class Order extends Model
 {
     use SoftDeletes;
     protected $fillable = ['customer_id','restaurant_id','courier_id','status','payment_method','payment_status','subtotal','delivery_fee','total','delivery_address','delivery_lat','delivery_lng','note'];
+    protected $casts = [
+        'subtotal'     => 'float',
+        'delivery_fee' => 'float',
+        'total'        => 'float',
+        'delivery_lat' => 'float',
+        'delivery_lng' => 'float',
+    ];
 
     public function customer()   { return $this->belongsTo(Customer::class); }
     public function restaurant() { return $this->belongsTo(Restaurant::class); }

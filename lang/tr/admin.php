@@ -9,6 +9,7 @@ return [
         'group_orders'     => 'Siparişler',
         'categories'       => 'Kategoriler',
         'products'         => 'Ürünler',
+        'units'            => 'Birimler',
         'restaurants'      => 'Restoranlar',
         'couriers'         => 'Kuryeler',
         'users'            => 'Kullanıcılar',
@@ -117,6 +118,12 @@ return [
         'payment_card'      => 'Kart',
         'address'           => 'Adres',
         'date'              => 'Tarih',
+    ],
+
+    // Unit
+    'unit' => [
+        'label'  => 'Birim',
+        'create' => 'Birim Ekle',
     ],
 
     // Product

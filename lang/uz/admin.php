@@ -9,6 +9,7 @@ return [
         'group_orders'     => 'Buyurtmalar',
         'categories'       => 'Kategoriyalar',
         'products'         => 'Mahsulotlar',
+        'units'            => 'Birliklar',
         'restaurants'      => 'Restoranlar',
         'couriers'         => 'Kuryerlar',
         'users'            => 'Foydalanuvchilar',
@@ -117,6 +118,12 @@ return [
         'payment_card'=> 'Karta',
         'address'     => 'Manzil',
         'date'        => 'Sana',
+    ],
+
+    // Unit
+    'unit' => [
+        'label'  => 'Birlik',
+        'create' => 'Birlik qo\'shish',
     ],
 
     // Product
