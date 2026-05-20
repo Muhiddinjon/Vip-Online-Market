@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Order extends Model
 {
     use SoftDeletes;
-    protected $fillable = ['customer_id','restaurant_id','courier_id','status','payment_method','payment_status','subtotal','delivery_fee','total','delivery_address','delivery_lat','delivery_lng','note','reject_reason'];
+    protected $fillable = ['customer_id','restaurant_id','branch_id','courier_id','status','payment_method','payment_status','subtotal','delivery_fee','total','delivery_address','delivery_lat','delivery_lng','note','reject_reason'];
     protected $casts = [
         'subtotal'     => 'float',
         'delivery_fee' => 'float',
@@ -18,6 +18,7 @@ class Order extends Model
 
     public function customer()   { return $this->belongsTo(Customer::class); }
     public function restaurant() { return $this->belongsTo(Restaurant::class); }
+    public function branch()     { return $this->belongsTo(Branch::class); }
     public function courier()    { return $this->belongsTo(Courier::class); }
     public function items()      { return $this->hasMany(OrderItem::class); }
 }

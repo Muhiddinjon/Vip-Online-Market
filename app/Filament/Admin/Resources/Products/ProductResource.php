@@ -1,12 +1,13 @@
 <?php
 namespace App\Filament\Admin\Resources\Products;
 
+use App\Filament\Admin\Resources\Products\Pages\ListProducts;
+use App\Models\Branch;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Restaurant;
 use App\Models\Unit;
 use Filament\Actions\DeleteAction;
-use Illuminate\Support\Facades\Schema as DbSchema;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteAction;
@@ -14,7 +15,9 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\BulkActionGroup;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Get;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -33,6 +36,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Schema as DbSchema;
 
 class ProductResource extends Resource
 {
@@ -40,16 +44,8 @@ class ProductResource extends Resource
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
     protected static ?int $navigationSort = 2;
 
-    public static function getNavigationLabel(): string
-    {
-        return __('admin.nav.products');
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return __('admin.nav.group_menu');
-    }
-
+    public static function getNavigationLabel(): string { return __('admin.nav.products'); }
+    public static function getNavigationGroup(): ?string { return __('admin.nav.group_menu'); }
     public static function canViewAny(): bool { return true; }
     public static function canDelete(Model $record): bool { return true; }
     public static function canForceDelete(Model $record): bool { return true; }
@@ -71,7 +67,8 @@ class ProductResource extends Resource
                     Select::make('restaurant_id')
                         ->label(__('admin.nav.restaurants'))
                         ->options(Restaurant::withoutTrashed()->pluck('name', 'id'))
-                        ->searchable()->required(),
+                        ->searchable()->required()
+                        ->live(),
                     Select::make('category_id')
                         ->label(__('admin.nav.categories'))
                         ->options(fn () => Category::withoutTrashed()->where('status', 'active')->get()
@@ -81,55 +78,53 @@ class ProductResource extends Resource
 
                 Section::make(__('admin.product.section_price'))->components([
                     Grid::make(2)->components([
-                        TextInput::make('price')
-                            ->label(__('admin.product.price'))
-                            ->numeric()->required(),
-                        TextInput::make('original_price')
-                            ->label(__('admin.product.original_price'))
-                            ->numeric()
-                            ->dehydrated(false)
-                            ->helperText(__('admin.product.original_price_hint')),
+                        TextInput::make('price')->label(__('admin.product.price'))->numeric()->required(),
+                        TextInput::make('original_price')->label(__('admin.product.original_price'))
+                            ->numeric()->dehydrated(false)->helperText(__('admin.product.original_price_hint')),
                     ]),
                     Grid::make(2)->components([
                         Select::make(DbSchema::hasColumn('products', 'unit_id') ? 'unit_id' : 'unit')
                             ->label(__('admin.product.unit'))
-                            ->options(fn () => Unit::active()->get()
-                                ->mapWithKeys(fn ($u) => [
-                                    DbSchema::hasColumn('products', 'unit_id') ? $u->id : $u->slug =>
-                                    $u->name[app()->getLocale()] ?? $u->name['uz'] ?? $u->name['en'] ?? '—'
-                                ]))
-                            ->required(),
-                        Toggle::make('is_available')
-                            ->label(__('admin.product.available'))
-                            ->default(true)->inline(false),
+                            ->options(fn () => Unit::active()->get()->mapWithKeys(fn ($u) => [
+                                DbSchema::hasColumn('products', 'unit_id') ? $u->id : $u->slug =>
+                                $u->name[app()->getLocale()] ?? $u->name['uz'] ?? $u->name['en'] ?? '—'
+                            ]))->required(),
+                        Toggle::make('is_available')->label(__('admin.product.available'))->default(true)->inline(false),
                     ]),
                 ]),
 
+                Section::make(__('admin.branch.section_availability'))
+                    ->hidden(fn (Get $get) => ! \Illuminate\Support\Facades\Schema::hasTable('branches')
+                        || ! Branch::withoutTrashed()->where('restaurant_id', $get('restaurant_id'))->exists())
+                    ->components([
+                        CheckboxList::make('branch_ids')
+                            ->label(__('admin.branch.available_in'))
+                            ->options(fn (Get $get) => \Illuminate\Support\Facades\Schema::hasTable('branches')
+                                ? Branch::withoutTrashed()
+                                    ->where('restaurant_id', $get('restaurant_id'))
+                                    ->where('status', 'active')
+                                    ->pluck('name', 'id')
+                                    ->toArray()
+                                : [])
+                            ->columns(2)
+                            ->helperText(__('admin.branch.availability_hint')),
+                    ]),
+
                 Section::make(__('admin.product.section_images'))->components([
-                    FileUpload::make('images')
-                        ->label(__('admin.product.images'))
-                        ->multiple()
-                        ->minFiles(1)
-                        ->maxFiles(3)
-                        ->image()
-                        ->disk('public')
-                        ->directory('products')
-                        ->maxSize(2048)
-                        ->reorderable(),
+                    FileUpload::make('images')->label(__('admin.product.images'))
+                        ->multiple()->minFiles(1)->maxFiles(3)->image()
+                        ->disk('public')->directory('products')->maxSize(2048)->reorderable(),
                 ]),
             ])->columnSpan(1),
 
-            Section::make(__('admin.product.section_name'))
-                ->columnSpan(1)
-                ->components([
-                    TextInput::make('name.uz')->label(__('admin.category.name_uz'))->required(),
-                    TextInput::make('name.en')->label(__('admin.category.name_en')),
-                    TextInput::make('name.tr')->label(__('admin.category.name_tr')),
-                    Textarea::make('description.uz')->label(__('admin.product.desc_uz'))->rows(4),
-                    Textarea::make('description.en')->label(__('admin.product.desc_en'))->rows(4),
-                    Textarea::make('description.tr')->label(__('admin.product.desc_tr'))->rows(4),
-                ]),
-
+            Section::make(__('admin.product.section_name'))->columnSpan(1)->components([
+                TextInput::make('name.uz')->label(__('admin.category.name_uz'))->required(),
+                TextInput::make('name.en')->label(__('admin.category.name_en')),
+                TextInput::make('name.tr')->label(__('admin.category.name_tr')),
+                Textarea::make('description.uz')->label(__('admin.product.desc_uz'))->rows(4),
+                Textarea::make('description.en')->label(__('admin.product.desc_en'))->rows(4),
+                Textarea::make('description.tr')->label(__('admin.product.desc_tr'))->rows(4),
+            ]),
         ]);
     }
 
@@ -137,19 +132,11 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('images.path')
-                    ->label(__('admin.product.image'))
-                    ->circular()
-                    ->limit(1)
-                    ->disk('public'),
+                ImageColumn::make('images.path')->label(__('admin.product.image'))->circular()->limit(1)->disk('public'),
                 TextColumn::make('restaurant.name')->label(__('admin.nav.restaurants'))->searchable()->sortable(),
-                TextColumn::make('category_name')
-                    ->label(__('admin.nav.categories'))
+                TextColumn::make('category_name')->label(__('admin.nav.categories'))
                     ->getStateUsing(fn (Product $record): string =>
-                        $record->category?->name['uz'] ??
-                        $record->category?->name['en'] ??
-                        $record->category?->name['tr'] ?? '—'
-                    ),
+                        $record->category?->name['uz'] ?? $record->category?->name['en'] ?? $record->category?->name['tr'] ?? '—'),
                 TextColumn::make('name.uz')->label(__('admin.product.label_uz'))->searchable()->sortable(),
                 TextColumn::make('price')->label(__('admin.product.price'))->money('UZS')->sortable(),
                 TextColumn::make('unit')->label(__('admin.product.unit')),
@@ -164,18 +151,19 @@ class ProductResource extends Resource
             ])
             ->actions([
                 EditAction::make()
-                    ->label('')
-                    ->tooltip(__('admin.common.edit'))
+                    ->label('')->tooltip(__('admin.common.edit'))
                     ->mutateRecordDataUsing(function (array $data, Product $record): array {
-                        $data['images'] = $record->images()->pluck('path')->toArray();
+                        $data['images']     = $record->images()->pluck('path')->toArray();
+                        $data['branch_ids'] = $record->branches()->wherePivot('is_available', true)
+                            ->pluck('branches.id')->toArray();
                         return $data;
                     })
                     ->after(function (Product $record, array $data): void {
                         $record->images()->delete();
-                        $paths = array_values(array_filter($data['images'] ?? []));
-                        foreach ($paths as $i => $path) {
+                        foreach (array_values(array_filter($data['images'] ?? [])) as $i => $path) {
                             $record->images()->create(['path' => $path, 'sort_order' => $i]);
                         }
+                        ListProducts::syncBranches($record, $data);
                     }),
                 RestoreAction::make()->label('')->tooltip(__('admin.common.restore')),
                 DeleteAction::make()->label('')->tooltip(__('admin.common.delete')),
@@ -195,8 +183,6 @@ class ProductResource extends Resource
 
     public static function getPages(): array
     {
-        return [
-            'index' => Pages\ListProducts::route('/'),
-        ];
+        return ['index' => Pages\ListProducts::route('/')];
     }
 }

@@ -28,11 +28,13 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->darkMode(true)
+            ->darkMode(isForced: true)
             ->colors([
                 'primary' => Color::Violet,
             ])
             ->brandName('VipOnlineMarket — Admin')
+            ->renderHook(PanelsRenderHook::HEAD_END, fn (): string => view('admin.background')->render())
+            ->renderHook(PanelsRenderHook::SIMPLE_PAGE_END, fn (): string => view('admin.login-back-button')->render())
             ->renderHook(PanelsRenderHook::BODY_END, fn (): string => view('orders.order-alert')->render())
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\Filament\Admin\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\Filament\Admin\Pages')

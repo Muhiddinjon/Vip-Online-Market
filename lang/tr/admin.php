@@ -14,6 +14,7 @@ return [
         'couriers'         => 'Kuryeler',
         'users'            => 'Kullanıcılar',
         'orders'           => 'Siparişler',
+        'branches'         => 'Şubeler',
         'dashboard'        => 'Yönetim Paneli',
     ],
 
@@ -135,6 +136,18 @@ return [
         'pending_orders'    => 'Bekleyenler',
     ],
 
+    // Branch
+    'branch' => [
+        'label'               => 'Şube',
+        'create'              => 'Şube Ekle',
+        'name'                => 'Şube Adı',
+        'section_main'        => 'Şube Bilgileri',
+        'section_availability'=> 'Şube Uygunluğu',
+        'available_in'        => 'Hangi şubelerde mevcut',
+        'availability_hint'   => 'Ürünün mevcut olduğu şubeleri seçin. Varsayılan olarak tümü seçilir.',
+        'products_count'      => 'Ürünler',
+    ],
+
     // Unit
     'unit' => [
         'label'  => 'Birim',
@@ -180,6 +193,11 @@ return [
         'cancelled_not'     => 'İptal edilmemiş',
         'in_progress'       => 'İşlemde',
         'total'             => 'Toplam',
+    ],
+
+    // Auth
+    'auth' => [
+        'back_to_home' => 'Ana sayfaya dön',
     ],
 
 ];

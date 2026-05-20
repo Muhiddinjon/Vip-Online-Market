@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Branch;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Restaurant;
@@ -31,9 +32,22 @@ class CatalogController extends Controller
         return $path ? Storage::disk('public')->url($path) : null;
     }
 
-    private function formatRestaurant(Restaurant $r): array
+    private function formatBranch(Branch $b): array
     {
         return [
+            'id'      => $b->id,
+            'name'    => $b->name,
+            'address' => $b->address,
+            'lat'     => $b->lat,
+            'lng'     => $b->lng,
+            'phone'   => $b->phone,
+            'status'  => $b->status,
+        ];
+    }
+
+    private function formatRestaurant(Restaurant $r): array
+    {
+        $data = [
             'id'          => $r->id,
             'name'        => $r->name,
             'description' => $this->localize($r->description),
@@ -45,6 +59,16 @@ class CatalogController extends Controller
             'phone'       => $r->phone,
             'status'      => $r->status,
         ];
+
+        if ($r->relationLoaded('branches')) {
+            $data['branches'] = $r->branches
+                ->where('status', 'active')
+                ->values()
+                ->map(fn ($b) => $this->formatBranch($b))
+                ->all();
+        }
+
+        return $data;
     }
 
     private function formatCategory(Category $c): array
@@ -79,6 +103,7 @@ class CatalogController extends Controller
     public function restaurants(Request $request): JsonResponse
     {
         $query = Restaurant::withoutTrashed()
+            ->with(['branches' => fn ($q) => $q->where('status', 'active')->orderBy('name')])
             ->where('status', 'active')
             ->when($request->search, fn ($q) => $q->where('name', 'LIKE', "%{$request->search}%"))
             ->when($request->sort === 'name_asc',  fn ($q) => $q->orderBy('name'))
@@ -102,6 +127,7 @@ class CatalogController extends Controller
     public function restaurant(int $id): JsonResponse
     {
         $restaurant = Restaurant::withoutTrashed()
+            ->with(['branches' => fn ($q) => $q->where('status', 'active')->orderBy('name')])
             ->where('status', 'active')
             ->findOrFail($id);
 

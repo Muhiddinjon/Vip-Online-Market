@@ -26,4 +26,5 @@ class Product extends Model
     public function category()    { return $this->belongsTo(Category::class); }
     public function unit()        { return $this->belongsTo(Unit::class); }
     public function images()      { return $this->hasMany(ProductImage::class)->orderBy('sort_order'); }
+    public function branches()    { return $this->belongsToMany(Branch::class, 'branch_product')->withPivot('is_available'); }
 }

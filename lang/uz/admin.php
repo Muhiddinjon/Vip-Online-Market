@@ -14,6 +14,7 @@ return [
         'couriers'         => 'Kuryerlar',
         'users'            => 'Foydalanuvchilar',
         'orders'           => 'Buyurtmalar',
+        'branches'         => 'Filiallar',
         'dashboard'        => 'Boshqaruv paneli',
     ],
 
@@ -135,6 +136,18 @@ return [
         'pending_orders'    => 'Kutilayotgan',
     ],
 
+    // Branch
+    'branch' => [
+        'label'               => 'Filial',
+        'create'              => 'Filial qo\'shish',
+        'name'                => 'Filial nomi',
+        'section_main'        => 'Filial ma\'lumotlari',
+        'section_availability'=> 'Filiallardagi mavjudligi',
+        'available_in'        => 'Qaysi filiallarda mavjud',
+        'availability_hint'   => 'Mahsulot mavjud bo\'lgan filiallarni tanlang. Sukut bo\'yicha barchasi tanlanadi.',
+        'products_count'      => 'Mahsulotlar',
+    ],
+
     // Unit
     'unit' => [
         'label'  => 'Birlik',
@@ -180,6 +193,11 @@ return [
         'cancelled_not'    => 'Bekor qilinmagan',
         'in_progress'      => 'Bajarilishi kutilmoqda',
         'total'            => 'Jami',
+    ],
+
+    // Auth
+    'auth' => [
+        'back_to_home' => 'Bosh sahifaga qaytish',
     ],
 
 ];

@@ -14,6 +14,7 @@ return [
         'couriers'         => 'Couriers',
         'users'            => 'Users',
         'orders'           => 'Orders',
+        'branches'         => 'Branches',
         'dashboard'        => 'Dashboard',
     ],
 
@@ -135,6 +136,18 @@ return [
         'pending_orders'    => 'Pending',
     ],
 
+    // Branch
+    'branch' => [
+        'label'               => 'Branch',
+        'create'              => 'Add Branch',
+        'name'                => 'Branch Name',
+        'section_main'        => 'Branch Details',
+        'section_availability'=> 'Branch Availability',
+        'available_in'        => 'Available in branches',
+        'availability_hint'   => 'Select the branches where this product is available. All are selected by default.',
+        'products_count'      => 'Products',
+    ],
+
     // Unit
     'unit' => [
         'label'  => 'Unit',
@@ -180,6 +193,11 @@ return [
         'cancelled_not'     => 'Not cancelled',
         'in_progress'       => 'In progress',
         'total'             => 'Total',
+    ],
+
+    // Auth
+    'auth' => [
+        'back_to_home' => 'Back to home',
     ],
 
 ];
