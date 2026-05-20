@@ -17,7 +17,7 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Get;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -111,9 +111,16 @@ class ProductResource extends Resource
                     ]),
 
                 Section::make(__('admin.product.section_images'))->components([
-                    FileUpload::make('images')->label(__('admin.product.images'))
-                        ->multiple()->minFiles(1)->maxFiles(3)->image()
-                        ->disk('public')->directory('products')->maxSize(2048)->reorderable(),
+                    FileUpload::make('uploaded_images')
+                        ->label(__('admin.product.images'))
+                        ->multiple()
+                        ->minFiles(1)
+                        ->maxFiles(3)
+                        ->image()
+                        ->disk('public')
+                        ->directory('products')
+                        ->maxSize(2048)
+                        ->reorderable(),
                 ]),
             ])->columnSpan(1),
 
@@ -153,14 +160,20 @@ class ProductResource extends Resource
                 EditAction::make()
                     ->label('')->tooltip(__('admin.common.edit'))
                     ->mutateRecordDataUsing(function (array $data, Product $record): array {
+
                         $data['images']     = $record->images()->pluck('path')->toArray();
                         $data['branch_ids'] = $record->branches()->wherePivot('is_available', true)
                             ->pluck('branches.id')->toArray();
+
+                        $data['uploaded_images'] = $record->images()->pluck('path')->toArray();
+
                         return $data;
                     })
                     ->after(function (Product $record, array $data): void {
                         $record->images()->delete();
-                        foreach (array_values(array_filter($data['images'] ?? [])) as $i => $path) {
+                        $paths = array_values(array_filter($data['uploaded_images'] ?? []));
+                        foreach ($paths as $i => $path) {
+
                             $record->images()->create(['path' => $path, 'sort_order' => $i]);
                         }
                         ListProducts::syncBranches($record, $data);

@@ -40,8 +40,8 @@
                 return;
             }
 
-            const existingLat = parseFloat(this.lat) || 41.2995;
-            const existingLng = parseFloat(this.lng) || 69.2401;
+            const existingLat = parseFloat(this.lat) || 40.5399;
+            const existingLng = parseFloat(this.lng) || 70.937;
 
             this.map = L.map('lmap-canvas').setView([existingLat, existingLng], 13);
 

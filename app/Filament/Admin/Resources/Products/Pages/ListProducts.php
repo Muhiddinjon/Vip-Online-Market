@@ -18,8 +18,9 @@ class ListProducts extends ListRecords
                 ->label(__('admin.product.create'))
                 ->createAnother(false)
                 ->after(function (Product $record, array $data): void {
-                    // Images
-                    $paths = array_values(array_filter($data['images'] ?? []));
+
+                $paths = array_values(array_filter($data['uploaded_images'] ?? []));
+
                     foreach ($paths as $i => $path) {
                         $record->images()->create(['path' => $path, 'sort_order' => $i]);
                     }
