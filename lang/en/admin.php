@@ -8,6 +8,8 @@ return [
         'group_management' => 'Management',
         'group_orders'     => 'Orders',
         'categories'       => 'Categories',
+        'shop_categories'  => 'Shop Categories',
+        'advertisements'   => 'Advertisements',
         'products'         => 'Products',
         'units'            => 'Units',
         'restaurants'      => 'Restaurants',
@@ -24,6 +26,7 @@ return [
         'active'       => 'Active',
         'inactive'     => 'Inactive',
         'blocked'      => 'Blocked',
+        'deleted'      => 'Deleted',
         'edit'         => 'Edit',
         'delete'       => 'Delete',
         'force_delete' => 'Permanently Delete',
@@ -48,6 +51,7 @@ return [
         'name_tr'       => 'Name (TR)',
         'sort_order'    => 'Sort Order',
         'products'      => 'Products',
+        'image'         => 'Image',
     ],
 
     // User
@@ -94,10 +98,43 @@ return [
         'section_description' => 'Description',
         'section_address'     => 'Location',
         'section_images'      => 'Images',
+        'section_delivery'    => 'Delivery',
+        'section_rating'      => 'Rating',
         'name'                => 'Restaurant Name',
         'address'             => 'Address',
         'cover'               => 'Cover Image',
         'orders'              => 'Orders',
+        'delivery_time'       => 'Delivery Time',
+        'delivery_time_unit'  => 'min',
+        'delivery_fee'        => 'Delivery Fee',
+        'delivery_fee_unit'   => 'sum',
+        'open_time'           => 'Opening Time',
+        'close_time'          => 'Closing Time',
+        'rating'              => 'Rating (0-5)',
+    ],
+
+    // Advertisement
+    'advertisement' => [
+        'label'        => 'Advertisement',
+        'create'       => 'Add Advertisement',
+        'section_main' => 'Main Information',
+        'section_image'=> 'Image (4x3)',
+        'title'        => 'Title',
+        'url'          => 'URL Link',
+        'details'      => 'Details Text',
+        'image'        => 'Image',
+        'image_hint'   => 'Upload image in 4x3 ratio (e.g. 800x600)',
+        'queue'        => 'Sort Order',
+    ],
+
+    // Shop Category
+    'shop_category' => [
+        'label'        => 'Shop Category',
+        'create'       => 'Add Shop Category',
+        'section_main' => 'Main Information',
+        'section_image'=> 'Image',
+        'badge_text'   => 'Badge Text',
+        'image'        => 'Image',
     ],
 
     // Order
@@ -177,6 +214,8 @@ return [
         'unit_gramm'         => 'Gram',
         'unit_litr'          => 'Litre',
         'available'          => 'Available',
+        'sale'               => 'Discount',
+        'sale_hint'          => 'Discount percentage (0 = no discount)',
     ],
 
     // Stats

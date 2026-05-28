@@ -8,6 +8,8 @@ return [
         'group_management' => 'Yönetim',
         'group_orders'     => 'Siparişler',
         'categories'       => 'Kategoriler',
+        'shop_categories'  => 'Mağaza Kategorileri',
+        'advertisements'   => 'Reklamlar',
         'products'         => 'Ürünler',
         'units'            => 'Birimler',
         'restaurants'      => 'Restoranlar',
@@ -24,6 +26,7 @@ return [
         'active'       => 'Aktif',
         'inactive'     => 'Pasif',
         'blocked'      => 'Engellendi',
+        'deleted'      => 'Silindi',
         'edit'         => 'Düzenle',
         'delete'       => 'Sil',
         'force_delete' => 'Kalıcı Sil',
@@ -48,6 +51,7 @@ return [
         'name_tr'       => 'İsim (TR)',
         'sort_order'    => 'Sıralama',
         'products'      => 'Ürünler',
+        'image'         => 'Görsel',
     ],
 
     // User
@@ -94,10 +98,43 @@ return [
         'section_description' => 'Açıklama',
         'section_address'     => 'Konum',
         'section_images'      => 'Görseller',
+        'section_delivery'    => 'Teslimat',
+        'section_rating'      => 'Puan',
         'name'                => 'Restoran Adı',
         'address'             => 'Adres',
         'cover'               => 'Kapak Görseli',
         'orders'              => 'Siparişler',
+        'delivery_time'       => 'Teslimat Süresi',
+        'delivery_time_unit'  => 'dk',
+        'delivery_fee'        => 'Teslimat Ücreti',
+        'delivery_fee_unit'   => 'sum',
+        'open_time'           => 'Açılış Saati',
+        'close_time'          => 'Kapanış Saati',
+        'rating'              => 'Puan (0-5)',
+    ],
+
+    // Advertisement
+    'advertisement' => [
+        'label'        => 'Reklam',
+        'create'       => 'Reklam Ekle',
+        'section_main' => 'Temel Bilgiler',
+        'section_image'=> 'Görsel (4x3)',
+        'title'        => 'Başlık',
+        'url'          => 'URL Bağlantısı',
+        'details'      => 'Detay Metni',
+        'image'        => 'Görsel',
+        'image_hint'   => '4x3 oranında görsel yükleyin (ör. 800x600)',
+        'queue'        => 'Sıralama',
+    ],
+
+    // Shop Category
+    'shop_category' => [
+        'label'        => 'Mağaza Kategorisi',
+        'create'       => 'Mağaza Kategorisi Ekle',
+        'section_main' => 'Temel Bilgiler',
+        'section_image'=> 'Görsel',
+        'badge_text'   => 'Rozet Metni',
+        'image'        => 'Görsel',
     ],
 
     // Order
@@ -177,6 +214,8 @@ return [
         'unit_gramm'         => 'Gram',
         'unit_litr'          => 'Litre',
         'available'          => 'Mevcut',
+        'sale'               => 'İndirim',
+        'sale_hint'          => 'İndirim yüzdesi (0 = indirim yok)',
     ],
 
     // Stats

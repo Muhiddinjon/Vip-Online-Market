@@ -8,6 +8,8 @@ return [
         'group_management' => 'Boshqaruv',
         'group_orders'     => 'Buyurtmalar',
         'categories'       => 'Kategoriyalar',
+        'shop_categories'  => 'Savdo kategoriyalari',
+        'advertisements'   => 'Reklamalar',
         'products'         => 'Mahsulotlar',
         'units'            => 'Birliklar',
         'restaurants'      => 'Restoranlar',
@@ -24,6 +26,7 @@ return [
         'active'       => 'Faol',
         'inactive'     => 'Nofaol',
         'blocked'      => 'Bloklangan',
+        'deleted'      => 'O\'chirilgan',
         'edit'         => 'Tahrirlash',
         'delete'       => 'O\'chirish',
         'force_delete' => 'Butunlay o\'chirish',
@@ -48,6 +51,7 @@ return [
         'name_tr'    => 'İsim (TR)',
         'sort_order' => 'Tartib',
         'products'   => 'Mahsulotlar',
+        'image'      => 'Rasm',
     ],
 
     // User
@@ -94,10 +98,43 @@ return [
         'section_description'=> 'Tavsif',
         'section_address'    => 'Joylashuv',
         'section_images'     => 'Rasmlar',
+        'section_delivery'   => 'Yetkazib berish',
+        'section_rating'     => 'Reyting',
         'name'               => 'Restoran nomi',
         'address'            => 'Manzil',
         'cover'              => 'Cover rasm',
         'orders'             => 'Buyurtmalar',
+        'delivery_time'      => 'Yetkazib berish vaqti',
+        'delivery_time_unit' => 'daqiqa',
+        'delivery_fee'       => 'Yetkazib berish narxi',
+        'delivery_fee_unit'  => 'so\'m',
+        'open_time'          => 'Ochilish vaqti',
+        'close_time'         => 'Yopilish vaqti',
+        'rating'             => 'Reyting (0-5)',
+    ],
+
+    // Advertisement
+    'advertisement' => [
+        'label'        => 'Reklama',
+        'create'       => 'Reklama qo\'shish',
+        'section_main' => 'Asosiy ma\'lumotlar',
+        'section_image'=> 'Rasm (4x3)',
+        'title'        => 'Sarlavha',
+        'url'          => 'URL havolasi',
+        'details'      => 'Batafsil matn',
+        'image'        => 'Rasm',
+        'image_hint'   => '4x3 nisbatida rasm yuklang (masalan 800x600)',
+        'queue'        => 'Tartib',
+    ],
+
+    // Shop Category
+    'shop_category' => [
+        'label'        => 'Savdo kategoriyasi',
+        'create'       => 'Savdo kategoriyasi qo\'shish',
+        'section_main' => 'Asosiy ma\'lumotlar',
+        'section_image'=> 'Rasm',
+        'badge_text'   => 'Badge matni',
+        'image'        => 'Rasm',
     ],
 
     // Order
@@ -177,6 +214,8 @@ return [
         'unit_gramm'      => 'Gramm',
         'unit_litr'       => 'Litr',
         'available'       => 'Mavjud',
+        'sale'            => 'Chegirma',
+        'sale_hint'       => 'Chegirma foizi (0 = chegirma yo\'q)',
     ],
 
     // Stats

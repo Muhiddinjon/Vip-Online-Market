@@ -9,7 +9,7 @@
     --bg: #0f1117; --surface: #1a1d27; --border: #2a2d3a;
     --primary: #6c8cf7; --green: #34d399; --red: #f87171;
     --yellow: #fbbf24; --gray: #8b92a5; --text: #e2e8f0;
-    --code-bg: #0d1117;
+    --code-bg: #0d1117; --orange: #fb923c; --teal: #2dd4bf;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.6; }
@@ -17,32 +17,38 @@
   a:hover { text-decoration: underline; }
 
   /* Layout */
-  .sidebar { position: fixed; top: 0; left: 0; width: 260px; height: 100vh; background: var(--surface); border-right: 1px solid var(--border); overflow-y: auto; padding: 24px 0; }
-  .sidebar h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--gray); padding: 0 20px 8px; }
-  .sidebar a { display: block; padding: 6px 20px; color: var(--text); font-size: 14px; border-left: 2px solid transparent; }
-  .sidebar a:hover { background: rgba(108,140,247,.1); border-left-color: var(--primary); text-decoration: none; }
-  .sidebar .brand { font-size: 16px; font-weight: 700; color: var(--text); padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+  .sidebar { position: fixed; top: 0; left: 0; width: 270px; height: 100vh; background: var(--surface); border-right: 1px solid var(--border); overflow-y: auto; padding: 24px 0; }
+  .sidebar h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--gray); padding: 0 20px 8px; }
+  .sidebar a { display: block; padding: 5px 20px; color: #c8cdd8; font-size: 13px; border-left: 2px solid transparent; }
+  .sidebar a:hover { background: rgba(108,140,247,.1); border-left-color: var(--primary); text-decoration: none; color: var(--text); }
+  .sidebar .brand { font-size: 15px; font-weight: 700; color: var(--text); padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
   .sidebar .group { margin-bottom: 20px; }
-  .content { margin-left: 260px; padding: 40px 48px; max-width: 900px; }
+  .sidebar .new-tag { display: inline-block; font-size: 9px; font-weight: 700; background: rgba(52,211,153,.2); color: var(--green); border-radius: 3px; padding: 1px 5px; margin-left: 6px; vertical-align: middle; letter-spacing: .03em; }
+  .sidebar .upd-tag { display: inline-block; font-size: 9px; font-weight: 700; background: rgba(251,191,36,.2); color: var(--yellow); border-radius: 3px; padding: 1px 5px; margin-left: 6px; vertical-align: middle; letter-spacing: .03em; }
+  .content { margin-left: 270px; padding: 40px 48px; max-width: 920px; }
 
   /* Headings */
   h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
-  h2 { font-size: 22px; font-weight: 600; margin: 40px 0 16px; padding-top: 40px; border-top: 1px solid var(--border); }
-  h3 { font-size: 17px; font-weight: 600; margin: 28px 0 10px; }
+  h2 { font-size: 22px; font-weight: 600; margin: 48px 0 16px; padding-top: 48px; border-top: 1px solid var(--border); }
+  h3 { font-size: 16px; font-weight: 600; margin: 24px 0 10px; color: var(--text); }
   p { margin-bottom: 12px; color: #c8cdd8; }
 
   /* Endpoint block */
   .endpoint { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 28px; overflow: hidden; }
-  .endpoint-header { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--border); }
+  .endpoint-header { display: flex; align-items: center; gap: 10px; padding: 13px 20px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
   .endpoint-header h4 { font-size: 15px; font-weight: 500; margin: 0; }
   .endpoint-header .desc { font-size: 13px; color: var(--gray); margin-left: auto; }
   .endpoint-body { padding: 20px; }
 
   /* Method badges */
   .badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 12px; font-weight: 700; letter-spacing: .04em; font-family: monospace; }
-  .badge-get    { background: rgba(52,211,153,.15); color: var(--green); }
+  .badge-get    { background: rgba(52,211,153,.15);  color: var(--green); }
   .badge-post   { background: rgba(251,191,36,.15);  color: var(--yellow); }
   .badge-delete { background: rgba(248,113,113,.15); color: var(--red); }
+
+  /* New / Updated pill */
+  .pill-new { display: inline-block; font-size: 11px; font-weight: 700; background: rgba(52,211,153,.18); color: var(--green); border-radius: 4px; padding: 2px 8px; }
+  .pill-upd { display: inline-block; font-size: 11px; font-weight: 700; background: rgba(251,191,36,.18);  color: var(--yellow); border-radius: 4px; padding: 2px 8px; }
 
   /* Auth indicator */
   .auth-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; background: rgba(108,140,247,.12); color: var(--primary); border-radius: 4px; padding: 2px 8px; }
@@ -51,28 +57,41 @@
   .path { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 14px; color: var(--text); }
 
   /* Code blocks */
-  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; overflow-x: auto; font-family: 'SF Mono', 'Fira Code', Consolas, monospace; font-size: 13px; line-height: 1.6; margin: 10px 0 16px; }
-  code { font-family: 'SF Mono', 'Fira Code', Consolas, monospace; }
-  .k { color: #c792ea; } /* key */
-  .s { color: #c3e88d; } /* string */
-  .n { color: #f78c6c; } /* number */
-  .b { color: #89ddff; } /* bool / null */
-  .c { color: #546e7a; } /* comment */
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; overflow-x: auto; font-family: 'SF Mono', 'Fira Code', Consolas, monospace; font-size: 13px; line-height: 1.65; margin: 10px 0 16px; }
+  code { font-family: 'SF Mono', 'Fira Code', Consolas, monospace; background: rgba(255,255,255,.06); padding: 1px 5px; border-radius: 3px; font-size: 13px; }
+  .k  { color: #c792ea; }  /* key */
+  .s  { color: #c3e88d; }  /* string */
+  .n  { color: #f78c6c; }  /* number */
+  .b  { color: #89ddff; }  /* bool / null */
+  .c  { color: #546e7a; }  /* comment */
+  .new-field { color: var(--green); font-weight: 600; } /* new field highlight */
 
   /* Params table */
   table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; font-size: 14px; }
-  th { text-align: left; padding: 8px 12px; background: var(--code-bg); color: var(--gray); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--border); }
+  th { text-align: left; padding: 8px 12px; background: var(--code-bg); color: var(--gray); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--border); }
   td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: #c8cdd8; vertical-align: top; }
   td:first-child { font-family: monospace; color: var(--primary); }
-  .req { color: var(--red); font-size: 11px; }
-  .opt { color: var(--gray); font-size: 11px; }
+  tr.new-row td:first-child { color: var(--green); }
+  .req { color: var(--red);    font-size: 11px; }
+  .opt { color: var(--gray);   font-size: 11px; }
+  .new { color: var(--green);  font-size: 11px; font-weight: 700; }
 
-  /* Info box */
+  /* Info / Note box */
   .info { background: rgba(108,140,247,.08); border: 1px solid rgba(108,140,247,.25); border-radius: 8px; padding: 14px 18px; margin-bottom: 20px; font-size: 14px; color: #a8b4d0; }
   .info strong { color: var(--primary); }
+  .note-new  { background: rgba(52,211,153,.07);  border: 1px solid rgba(52,211,153,.25);  border-radius: 8px; padding: 12px 16px; margin-bottom: 18px; font-size: 13px; color: #86efac; }
+  .note-upd  { background: rgba(251,191,36,.07);  border: 1px solid rgba(251,191,36,.25);  border-radius: 8px; padding: 12px 16px; margin-bottom: 18px; font-size: 13px; color: #fde68a; }
 
   /* Base URL */
   .base-url { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 18px; font-family: monospace; font-size: 14px; color: var(--green); margin-bottom: 20px; }
+
+  /* Changelog */
+  .changelog { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; margin-bottom: 28px; }
+  .changelog h3 { font-size: 14px; margin: 0 0 14px; color: var(--gray); text-transform: uppercase; letter-spacing: .06em; }
+  .cl-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; font-size: 14px; color: #c8cdd8; }
+  .cl-item:last-child { margin-bottom: 0; }
+  .cl-dot-new { width: 8px; height: 8px; border-radius: 50%; background: var(--green); margin-top: 6px; flex-shrink: 0; }
+  .cl-dot-upd { width: 8px; height: 8px; border-radius: 50%; background: var(--yellow); margin-top: 6px; flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -82,6 +101,7 @@
   <div class="group">
     <h2>Kirish</h2>
     <a href="#intro">Umumiy ma'lumot</a>
+    <a href="#changelog">O'zgarishlar</a>
     <a href="#auth-base">Autentifikatsiya</a>
   </div>
   <div class="group">
@@ -94,11 +114,13 @@
   </div>
   <div class="group">
     <h2>Katalog</h2>
-    <a href="#restaurants">Restoranlar ro'yxati</a>
-    <a href="#restaurant-show">Restoran tafsiloti</a>
-    <a href="#categories">Kategoriyalar</a>
-    <a href="#products">Mahsulotlar ro'yxati</a>
-    <a href="#product-show">Mahsulot tafsiloti</a>
+    <a href="#shop-categories">Savdo kategoriyalari <span class="new-tag">NEW</span></a>
+    <a href="#advertisements">Reklamalar <span class="new-tag">NEW</span></a>
+    <a href="#restaurants">Restoranlar ro'yxati <span class="upd-tag">UPD</span></a>
+    <a href="#restaurant-show">Restoran tafsiloti <span class="upd-tag">UPD</span></a>
+    <a href="#categories">Kategoriyalar <span class="upd-tag">UPD</span></a>
+    <a href="#products">Mahsulotlar ro'yxati <span class="upd-tag">UPD</span></a>
+    <a href="#product-show">Mahsulot tafsiloti <span class="upd-tag">UPD</span></a>
   </div>
   <div class="group">
     <h2>Buyurtmalar</h2>
@@ -134,6 +156,24 @@
 }</pre>
 </div>
 </section>
+
+<!-- ═══ CHANGELOG ════════════════════════════════════════════════ -->
+<h2 id="changelog">O'zgarishlar jurnali</h2>
+
+<div class="changelog">
+  <h3>v1.2 — 2026-05-28</h3>
+  <div class="cl-item"><div class="cl-dot-new"></div><span><strong>GET /catalog/shop-categories</strong> — yangi endpoint: katta savdo kategoriyalari (Kiyimlar, Gadgetlar…)</span></div>
+  <div class="cl-item"><div class="cl-dot-new"></div><span><strong>GET /catalog/advertisements</strong> — yangi endpoint: faol reklamalar (queue bo'yicha)</span></div>
+  <div class="cl-item"><div class="cl-dot-upd"></div><span><strong>Restoranlar</strong> — javobga <code>open_time</code>, <code>close_time</code>, <code>is_open</code>, <code>rating</code>, <code>delivery_time</code>, <code>delivery_fee</code> qo'shildi</span></div>
+  <div class="cl-item"><div class="cl-dot-upd"></div><span><strong>Kategoriyalar</strong> — javobga <code>image</code> (URL) qo'shildi</span></div>
+  <div class="cl-item"><div class="cl-dot-upd"></div><span><strong>Mahsulotlar</strong> — javobga <code>sale</code> (chegirma %) va <code>sale_price</code> (chegirmali narx) qo'shildi</span></div>
+</div>
+
+<div class="changelog">
+  <h3>v1.1 — 2026-05-27</h3>
+  <div class="cl-item"><div class="cl-dot-new"></div><span><strong>GET /catalog/shop-categories</strong> endpoint birinchi versiya</span></div>
+  <div class="cl-item"><div class="cl-dot-upd"></div><span><strong>Restoranlar</strong> — <code>delivery_time</code>, <code>delivery_fee</code> qo'shildi</span></div>
+</div>
 
 <!-- ═══ AUTH ════════════════════════════════════════════════════ -->
 <h2 id="auth-base">Autentifikatsiya</h2>
@@ -274,14 +314,111 @@ Authorization: Bearer &lt;token&gt;</pre>
 <!-- ═══ CATALOG ══════════════════════════════════════════════════ -->
 <h2>Katalog</h2>
 
+<!-- SHOP CATEGORIES -->
+<div class="endpoint" id="shop-categories">
+  <div class="endpoint-header">
+    <span class="badge badge-get">GET</span>
+    <span class="path">/catalog/shop-categories</span>
+    <span class="pill-new">NEW</span>
+    <span class="desc">Savdo kategoriyalari (Kiyimlar, Gadgetlar…)</span>
+  </div>
+  <div class="endpoint-body">
+    <div class="note-new">Ilovaga kirgan paytda ko'rsatiladigan katta kategoriyalar. Faqat faol (<code>status=true</code>) kategoriyalar, <code>sort_order</code> bo'yicha.</div>
+    <h3>Query parametrlar</h3>
+    <table>
+      <tr><th>Parametr</th><th>Tur</th><th>Holat</th><th>Tavsif</th></tr>
+      <tr><td>lang</td><td>string</td><td><span class="opt">Ixtiyoriy</span></td><td><code>uz</code> | <code>en</code> | <code>tr</code></td></tr>
+    </table>
+    <pre>GET /api/catalog/shop-categories?lang=uz</pre>
+    <h3>Response 200</h3>
+    <pre>{
+  <span class="k">"data"</span>: [
+    {
+      <span class="k">"id"</span>:         <span class="n">1</span>,
+      <span class="k">"name"</span>:       <span class="s">"Kiyimlar"</span>,
+      <span class="k">"image"</span>:      <span class="s">"https://your-domain.com/storage/shop-categories/clothes.png"</span>,
+      <span class="k">"badge_text"</span>: <span class="s">"Yangi"</span>,      <span class="c">// null bo'lishi mumkin</span>
+      <span class="k">"sort_order"</span>: <span class="n">1</span>
+    },
+    {
+      <span class="k">"id"</span>:         <span class="n">2</span>,
+      <span class="k">"name"</span>:       <span class="s">"Gadgetlar"</span>,
+      <span class="k">"image"</span>:      <span class="s">"https://..."</span>,
+      <span class="k">"badge_text"</span>: <span class="b">null</span>,
+      <span class="k">"sort_order"</span>: <span class="n">2</span>
+    }
+  ]
+}</pre>
+    <h3>Maydonlar</h3>
+    <table>
+      <tr><th>Maydon</th><th>Tur</th><th>Tavsif</th></tr>
+      <tr><td>id</td><td>integer</td><td>Kategoriya ID</td></tr>
+      <tr><td>name</td><td>string</td><td>Til bo'yicha nom</td></tr>
+      <tr><td>image</td><td>string|null</td><td>Rasm URL</td></tr>
+      <tr><td>badge_text</td><td>string|null</td><td>Karta ustidagi badge matni (masalan "Yangi", "🔥")</td></tr>
+      <tr><td>sort_order</td><td>integer</td><td>Tartib raqami</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ADVERTISEMENTS -->
+<div class="endpoint" id="advertisements">
+  <div class="endpoint-header">
+    <span class="badge badge-get">GET</span>
+    <span class="path">/catalog/advertisements</span>
+    <span class="pill-new">NEW</span>
+    <span class="desc">Faol reklamalar (banner, slider)</span>
+  </div>
+  <div class="endpoint-body">
+    <div class="note-new">Faqat <code>status=1</code> (faol) reklamalar <code>queue</code> (ASC) tartibida qaytariladi. Rasm 4×3 nisbatida.</div>
+    <pre>GET /api/catalog/advertisements</pre>
+    <h3>Response 200</h3>
+    <pre>{
+  <span class="k">"data"</span>: [
+    {
+      <span class="k">"id"</span>:      <span class="n">1</span>,
+      <span class="k">"title"</span>:   <span class="s">"Yozgi chegirmalar"</span>,
+      <span class="k">"image"</span>:   <span class="s">"https://your-domain.com/storage/advertisements/banner1.jpg"</span>,
+      <span class="k">"details"</span>: <span class="s">"Barcha mahsulotlarga 20% chegirma..."</span>, <span class="c">// null bo'lishi mumkin</span>
+      <span class="k">"url"</span>:     <span class="s">"https://example.com/promo"</span>,               <span class="c">// null bo'lishi mumkin</span>
+      <span class="k">"queue"</span>:   <span class="n">1</span>
+    },
+    {
+      <span class="k">"id"</span>:      <span class="n">2</span>,
+      <span class="k">"title"</span>:   <span class="s">"Yangi restoran"</span>,
+      <span class="k">"image"</span>:   <span class="s">"https://..."</span>,
+      <span class="k">"details"</span>: <span class="b">null</span>,
+      <span class="k">"url"</span>:     <span class="b">null</span>,
+      <span class="k">"queue"</span>:   <span class="n">2</span>
+    }
+  ]
+}</pre>
+    <h3>Maydonlar</h3>
+    <table>
+      <tr><th>Maydon</th><th>Tur</th><th>Tavsif</th></tr>
+      <tr><td>id</td><td>integer</td><td>Reklama ID</td></tr>
+      <tr><td>title</td><td>string</td><td>Sarlavha</td></tr>
+      <tr><td>image</td><td>string|null</td><td>Rasm URL (4×3 nisbat)</td></tr>
+      <tr><td>details</td><td>string|null</td><td>To'liq matn — bosganda bottom sheet dialog da ko'rsatiladi</td></tr>
+      <tr><td>url</td><td>string|null</td><td>Tashqi URL — bosganda browser/webview da ochiladi</td></tr>
+      <tr><td>queue</td><td>integer</td><td>Ko'rsatish tartibi (kichik raqam — oldinroq)</td></tr>
+    </table>
+    <div class="note-new" style="margin-top:14px;">
+      <strong>Logika:</strong> <code>url</code> mavjud bo'lsa — tashqi URL ochiladi. <code>details</code> mavjud bo'lsa — bottom sheet dialog ko'rsatiladi. Ikkalasi ham <code>null</code> bo'lsa — faqat ko'rish uchun banner.
+    </div>
+  </div>
+</div>
+
 <!-- RESTAURANTS LIST -->
 <div class="endpoint" id="restaurants">
   <div class="endpoint-header">
     <span class="badge badge-get">GET</span>
     <span class="path">/catalog/restaurants</span>
+    <span class="pill-upd">UPDATED</span>
     <span class="desc">Restoranlar ro'yxati</span>
   </div>
   <div class="endpoint-body">
+    <div class="note-upd">Yangi maydonlar qo'shildi: <code>delivery_time</code>, <code>delivery_fee</code>, <code>open_time</code>, <code>close_time</code>, <code>is_open</code>, <code>rating</code></div>
     <h3>Query parametrlar</h3>
     <table>
       <tr><th>Parametr</th><th>Tur</th><th>Holat</th><th>Tavsif</th></tr>
@@ -296,16 +433,22 @@ Authorization: Bearer &lt;token&gt;</pre>
     <pre>{
   <span class="k">"data"</span>: [
     {
-      <span class="k">"id"</span>:          <span class="n">1</span>,
-      <span class="k">"name"</span>:        <span class="s">"Pizza House"</span>,
-      <span class="k">"description"</span>: <span class="s">"Eng mazali pizza"</span>,
-      <span class="k">"address"</span>:     <span class="s">"Toshkent, Chilonzor"</span>,
-      <span class="k">"lat"</span>:          <span class="n">41.2995</span>,
-      <span class="k">"lng"</span>:          <span class="n">69.2401</span>,
-      <span class="k">"logo"</span>:        <span class="s">"https://your-domain.com/storage/restaurants/logos/abc.jpg"</span>,
-      <span class="k">"cover_image"</span>: <span class="s">"https://your-domain.com/storage/..."</span>,
-      <span class="k">"phone"</span>:       <span class="s">"+998901234567"</span>,
-      <span class="k">"status"</span>:      <span class="s">"active"</span>
+      <span class="k">"id"</span>:           <span class="n">1</span>,
+      <span class="k">"name"</span>:         <span class="s">"Pizza House"</span>,
+      <span class="k">"description"</span>:  <span class="s">"Eng mazali pizza"</span>,
+      <span class="k">"address"</span>:      <span class="s">"Toshkent, Chilonzor"</span>,
+      <span class="k">"lat"</span>:           <span class="n">41.2995</span>,
+      <span class="k">"lng"</span>:           <span class="n">69.2401</span>,
+      <span class="k">"logo"</span>:         <span class="s">"https://your-domain.com/storage/restaurants/logos/abc.jpg"</span>,
+      <span class="k">"cover_image"</span>:  <span class="s">"https://your-domain.com/storage/..."</span>,
+      <span class="k">"phone"</span>:        <span class="s">"+998901234567"</span>,
+      <span class="k">"status"</span>:       <span class="s">"active"</span>,
+      <span class="new-field">"delivery_time"</span>: <span class="n">30</span>,           <span class="c">// daqiqa, null bo'lishi mumkin</span>
+      <span class="new-field">"delivery_fee"</span>:  <span class="n">8000.0</span>,       <span class="c">// so'm, null bo'lishi mumkin</span>
+      <span class="new-field">"open_time"</span>:     <span class="s">"09:00"</span>,      <span class="c">// null bo'lishi mumkin</span>
+      <span class="new-field">"close_time"</span>:    <span class="s">"23:00"</span>,      <span class="c">// null bo'lishi mumkin</span>
+      <span class="new-field">"is_open"</span>:       <span class="b">true</span>,         <span class="c">// hozirgi vaqtga qarab avtomatik</span>
+      <span class="new-field">"rating"</span>:        <span class="n">4.7</span>           <span class="c">// 0.0 – 5.0</span>
     }
   ],
   <span class="k">"meta"</span>: {
@@ -315,6 +458,19 @@ Authorization: Bearer &lt;token&gt;</pre>
     <span class="k">"total"</span>:        <span class="n">52</span>
   }
 }</pre>
+    <h3>Yangi maydonlar</h3>
+    <table>
+      <tr><th>Maydon</th><th>Tur</th><th>Tavsif</th></tr>
+      <tr class="new-row"><td>delivery_time</td><td>integer|null</td><td>Yetkazib berish vaqti (daqiqada)</td></tr>
+      <tr class="new-row"><td>delivery_fee</td><td>float|null</td><td>Yetkazib berish narxi (so'mda)</td></tr>
+      <tr class="new-row"><td>open_time</td><td>string|null</td><td>Ochilish vaqti, format: <code>HH:mm</code></td></tr>
+      <tr class="new-row"><td>close_time</td><td>string|null</td><td>Yopilish vaqti, format: <code>HH:mm</code></td></tr>
+      <tr class="new-row"><td>is_open</td><td>boolean</td><td>Hozir ochiqmi? Server vaqtiga qarab hisoblanadi. Ish vaqti kiritilmagan bo'lsa — <code>true</code>. Kechasi o'tadigan jadvallar ham qo'llab-quvvatlanadi (masalan 22:00–02:00)</td></tr>
+      <tr class="new-row"><td>rating</td><td>float</td><td>Restoran reytingi (0.0–5.0, standart: 5.0)</td></tr>
+    </table>
+    <div class="note-upd" style="margin-top:12px;">
+      <strong>is_open logikasi:</strong> Agar <code>delivery_time</code> = 30 bo'lsa, restoran yopilishga 5 daqiqa qolganda (<code>close_time - 5min</code>) client app badge ko'rsatishi tavsiya etiladi: <em>"~30 daqiqada yopiladi"</em>
+    </div>
   </div>
 </div>
 
@@ -323,26 +479,51 @@ Authorization: Bearer &lt;token&gt;</pre>
   <div class="endpoint-header">
     <span class="badge badge-get">GET</span>
     <span class="path">/catalog/restaurants/{id}</span>
+    <span class="pill-upd">UPDATED</span>
     <span class="desc">Restoran + barcha kategoriya va mahsulotlari</span>
   </div>
   <div class="endpoint-body">
+    <div class="note-upd">Restoran maydonlari yangilandi (ish vaqti, reyting). Kategoriyalarga <code>image</code>, mahsulotlarga <code>sale</code>, <code>sale_price</code> qo'shildi.</div>
     <pre>GET /api/catalog/restaurants/1?lang=uz</pre>
     <h3>Response 200</h3>
     <pre>{
   <span class="k">"data"</span>: {
-    <span class="k">"id"</span>: <span class="n">1</span>, <span class="k">"name"</span>: <span class="s">"Pizza House"</span>, <span class="c">// ... restoran maydonlari</span>
+    <span class="k">"id"</span>:           <span class="n">1</span>,
+    <span class="k">"name"</span>:         <span class="s">"Pizza House"</span>,
+    <span class="k">"description"</span>:  <span class="s">"Eng mazali pizza"</span>,
+    <span class="k">"address"</span>:      <span class="s">"Toshkent, Chilonzor"</span>,
+    <span class="k">"lat"</span>:           <span class="n">41.2995</span>,
+    <span class="k">"lng"</span>:           <span class="n">69.2401</span>,
+    <span class="k">"logo"</span>:         <span class="s">"https://..."</span>,
+    <span class="k">"cover_image"</span>:  <span class="s">"https://..."</span>,
+    <span class="k">"phone"</span>:        <span class="s">"+998901234567"</span>,
+    <span class="k">"status"</span>:       <span class="s">"active"</span>,
+    <span class="new-field">"delivery_time"</span>: <span class="n">30</span>,
+    <span class="new-field">"delivery_fee"</span>:  <span class="n">8000.0</span>,
+    <span class="new-field">"open_time"</span>:     <span class="s">"09:00"</span>,
+    <span class="new-field">"close_time"</span>:    <span class="s">"23:00"</span>,
+    <span class="new-field">"is_open"</span>:       <span class="b">true</span>,
+    <span class="new-field">"rating"</span>:        <span class="n">4.7</span>,
+    <span class="k">"branches"</span>: [
+      { <span class="k">"id"</span>: <span class="n">1</span>, <span class="k">"name"</span>: <span class="s">"Chilonzor"</span>, <span class="k">"address"</span>: <span class="s">"..."</span>, <span class="k">"lat"</span>: <span class="n">41.3</span>, <span class="k">"lng"</span>: <span class="n">69.2</span>, <span class="k">"phone"</span>: <span class="s">"..."</span>, <span class="k">"status"</span>: <span class="s">"active"</span> }
+    ],
     <span class="k">"categories"</span>: [
       {
         <span class="k">"id"</span>:         <span class="n">2</span>,
         <span class="k">"name"</span>:       <span class="s">"Pizzalar"</span>,
+        <span class="new-field">"image"</span>:      <span class="s">"https://your-domain.com/storage/categories/pizza.png"</span>,
         <span class="k">"sort_order"</span>: <span class="n">1</span>,
         <span class="k">"products"</span>: [
           {
             <span class="k">"id"</span>:             <span class="n">10</span>,
+            <span class="k">"restaurant_id"</span>:  <span class="n">1</span>,
+            <span class="k">"category_id"</span>:    <span class="n">2</span>,
             <span class="k">"name"</span>:           <span class="s">"Margarita"</span>,
             <span class="k">"description"</span>:   <span class="s">"Klassik pizza"</span>,
             <span class="k">"price"</span>:         <span class="n">35000</span>,
             <span class="k">"original_price"</span>: <span class="b">null</span>,
+            <span class="new-field">"sale"</span>:          <span class="n">15.0</span>,       <span class="c">// chegirma foizi (0 = yo'q)</span>
+            <span class="new-field">"sale_price"</span>:    <span class="n">29750.0</span>,    <span class="c">// chegirmali narx (sale=0 bo'lsa null)</span>
             <span class="k">"unit"</span>:           <span class="s">"dona"</span>,
             <span class="k">"is_available"</span>:  <span class="b">true</span>,
             <span class="k">"image"</span>:         <span class="s">"https://..."</span>,
@@ -361,15 +542,27 @@ Authorization: Bearer &lt;token&gt;</pre>
   <div class="endpoint-header">
     <span class="badge badge-get">GET</span>
     <span class="path">/catalog/categories</span>
-    <span class="desc">Barcha kategoriyalar (sort_order bo'yicha)</span>
+    <span class="pill-upd">UPDATED</span>
+    <span class="desc">Barcha menyu kategoriyalari (sort_order bo'yicha)</span>
   </div>
   <div class="endpoint-body">
+    <div class="note-upd">Javobga <code>image</code> maydoni qo'shildi.</div>
     <pre>GET /api/catalog/categories?lang=uz</pre>
     <h3>Response 200</h3>
     <pre>{
   <span class="k">"data"</span>: [
-    { <span class="k">"id"</span>: <span class="n">1</span>, <span class="k">"name"</span>: <span class="s">"Pizzalar"</span>,   <span class="k">"sort_order"</span>: <span class="n">1</span> },
-    { <span class="k">"id"</span>: <span class="n">2</span>, <span class="k">"name"</span>: <span class="s">"Ichimliklar"</span>, <span class="k">"sort_order"</span>: <span class="n">2</span> }
+    {
+      <span class="k">"id"</span>:         <span class="n">1</span>,
+      <span class="k">"name"</span>:       <span class="s">"Pizzalar"</span>,
+      <span class="new-field">"image"</span>:      <span class="s">"https://your-domain.com/storage/categories/pizza.png"</span>,  <span class="c">// null bo'lishi mumkin</span>
+      <span class="k">"sort_order"</span>: <span class="n">1</span>
+    },
+    {
+      <span class="k">"id"</span>:         <span class="n">2</span>,
+      <span class="k">"name"</span>:       <span class="s">"Ichimliklar"</span>,
+      <span class="new-field">"image"</span>:      <span class="b">null</span>,
+      <span class="k">"sort_order"</span>: <span class="n">2</span>
+    }
   ]
 }</pre>
   </div>
@@ -380,9 +573,11 @@ Authorization: Bearer &lt;token&gt;</pre>
   <div class="endpoint-header">
     <span class="badge badge-get">GET</span>
     <span class="path">/catalog/products</span>
+    <span class="pill-upd">UPDATED</span>
     <span class="desc">Mahsulotlar ro'yxati — filter, qidirish, saralash</span>
   </div>
   <div class="endpoint-body">
+    <div class="note-upd">Javobga <code>sale</code> (chegirma foizi) va <code>sale_price</code> (chegirmali narx) maydonlari qo'shildi.</div>
     <h3>Query parametrlar</h3>
     <table>
       <tr><th>Parametr</th><th>Tur</th><th>Holat</th><th>Tavsif</th></tr>
@@ -405,7 +600,9 @@ Authorization: Bearer &lt;token&gt;</pre>
       <span class="k">"name"</span>:           <span class="s">"Ko'cha osh"</span>,
       <span class="k">"description"</span>:   <span class="s">"Mazali palov"</span>,
       <span class="k">"price"</span>:         <span class="n">25000</span>,
-      <span class="k">"original_price"</span>: <span class="n">30000</span>,
+      <span class="k">"original_price"</span>: <span class="n">30000</span>,    <span class="c">// ustidan chizilgan narx (null bo'lishi mumkin)</span>
+      <span class="new-field">"sale"</span>:          <span class="n">10.0</span>,        <span class="c">// chegirma foizi, 0 = chegirma yo'q</span>
+      <span class="new-field">"sale_price"</span>:    <span class="n">22500.0</span>,     <span class="c">// price × (1 - sale/100), sale=0 bo'lsa null</span>
       <span class="k">"unit"</span>:           <span class="s">"porsiya"</span>,
       <span class="k">"is_available"</span>:  <span class="b">true</span>,
       <span class="k">"image"</span>:         <span class="s">"https://your-domain.com/storage/products/abc.jpg"</span>,
@@ -414,6 +611,14 @@ Authorization: Bearer &lt;token&gt;</pre>
   ],
   <span class="k">"meta"</span>: { <span class="k">"current_page"</span>: <span class="n">1</span>, <span class="k">"last_page"</span>: <span class="n">2</span>, <span class="k">"per_page"</span>: <span class="n">20</span>, <span class="k">"total"</span>: <span class="n">35</span> }
 }</pre>
+    <h3>Narx maydonlari qiyoslanmasi</h3>
+    <table>
+      <tr><th>Maydon</th><th>Tavsif</th><th>Flutter da ishlatish</th></tr>
+      <tr><td>price</td><td>Asosiy narx</td><td>Chegirma bo'lmasa ko'rsatiladi</td></tr>
+      <tr><td>original_price</td><td>Eski narx (ustidan chizilgan)</td><td>Mavjud bo'lsa <code>price</code> ustidan chizib ko'rsatiladi</td></tr>
+      <tr class="new-row"><td>sale</td><td>Chegirma foizi (0–100)</td><td>Badge: "−10%"</td></tr>
+      <tr class="new-row"><td>sale_price</td><td>Chegirmali hisoblangan narx</td><td><code>sale &gt; 0</code> bo'lsa — asosiy narx sifatida ko'rsatiladi, <code>price</code> esa ustidan chiziladi</td></tr>
+    </table>
   </div>
 </div>
 
@@ -422,6 +627,7 @@ Authorization: Bearer &lt;token&gt;</pre>
   <div class="endpoint-header">
     <span class="badge badge-get">GET</span>
     <span class="path">/catalog/products/{id}</span>
+    <span class="pill-upd">UPDATED</span>
     <span class="desc">Mahsulot tafsiloti</span>
   </div>
   <div class="endpoint-body">
@@ -429,9 +635,19 @@ Authorization: Bearer &lt;token&gt;</pre>
     <h3>Response 200</h3>
     <pre>{
   <span class="k">"data"</span>: {
-    <span class="k">"id"</span>: <span class="n">5</span>, <span class="k">"name"</span>: <span class="s">"Ko'cha osh"</span>,
-    <span class="k">"price"</span>: <span class="n">25000</span>, <span class="k">"images"</span>: [<span class="s">"https://..."</span>, <span class="s">"https://..."</span>]
-    <span class="c">// ... barcha maydonlar</span>
+    <span class="k">"id"</span>:             <span class="n">5</span>,
+    <span class="k">"restaurant_id"</span>:  <span class="n">1</span>,
+    <span class="k">"category_id"</span>:    <span class="n">2</span>,
+    <span class="k">"name"</span>:           <span class="s">"Ko'cha osh"</span>,
+    <span class="k">"description"</span>:   <span class="s">"Mazali palov"</span>,
+    <span class="k">"price"</span>:         <span class="n">25000</span>,
+    <span class="k">"original_price"</span>: <span class="b">null</span>,
+    <span class="new-field">"sale"</span>:          <span class="n">0.0</span>,
+    <span class="new-field">"sale_price"</span>:    <span class="b">null</span>,
+    <span class="k">"unit"</span>:           <span class="s">"porsiya"</span>,
+    <span class="k">"is_available"</span>:  <span class="b">true</span>,
+    <span class="k">"image"</span>:         <span class="s">"https://..."</span>,
+    <span class="k">"images"</span>:        [<span class="s">"https://..."</span>, <span class="s">"https://..."</span>]
   }
 }</pre>
     <p>Mahsulot mavjud bo'lmasa yoki o'chirilgan bo'lsa: <code>404 Not Found</code></p>
@@ -494,7 +710,7 @@ Content-Type: application/json
     <span class="k">"total"</span>:           <span class="n">85000</span>,
     <span class="k">"delivery_address"</span>: <span class="s">"Toshkent, ..."</span>,
     <span class="k">"can_cancel"</span>:     <span class="b">true</span>,
-    <span class="k">"created_at"</span>:     <span class="s">"2026-05-04T10:30:00+05:00"</span>,
+    <span class="k">"created_at"</span>:     <span class="s">"2026-05-28T10:30:00+05:00"</span>,
     <span class="k">"restaurant"</span>:     { <span class="k">"id"</span>: <span class="n">1</span>, <span class="k">"name"</span>: <span class="s">"Pizza House"</span>, <span class="k">"logo"</span>: <span class="s">"https://..."</span> },
     <span class="k">"items"</span>: [
       {
@@ -563,7 +779,7 @@ Authorization: Bearer &lt;token&gt;</pre>
     <pre>GET /api/orders/101
 Authorization: Bearer &lt;token&gt;</pre>
     <h3>Response 200</h3>
-    <p>Javob formati <code>POST /orders</code> javobiдek bir xil.</p>
+    <p>Javob formati <code>POST /orders</code> javobidek bir xil.</p>
     <p>Buyurtma boshqa foydalanuvchiga tegishli bo'lsa yoki topilmasa: <code>404</code></p>
   </div>
 </div>
@@ -625,7 +841,7 @@ Authorization: Bearer &lt;token&gt;</pre>
 
 <!-- Footer -->
 <p style="margin-top:60px;color:var(--gray);font-size:13px;border-top:1px solid var(--border);padding-top:20px;">
-  VipOnlineMarket API v1.0 &nbsp;·&nbsp; Barcha so'rovlar HTTPS orqali yuborilishi kerak.
+  VipOnlineMarket API v1.2 &nbsp;·&nbsp; Barcha so'rovlar HTTPS orqali yuborilishi kerak.
 </p>
 </main>
 </body>

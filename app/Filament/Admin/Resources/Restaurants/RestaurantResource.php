@@ -14,6 +14,7 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
@@ -92,6 +93,41 @@ class RestaurantResource extends Resource
                 ])->required()->default('active'),
             ]),
 
+            Section::make(__('admin.restaurant.section_delivery'))->components([
+                Grid::make(2)->components([
+                    TextInput::make('delivery_time')
+                        ->label(__('admin.restaurant.delivery_time'))
+                        ->numeric()
+                        ->minValue(0)
+                        ->suffix(__('admin.restaurant.delivery_time_unit'))
+                        ->placeholder('30'),
+                    TextInput::make('delivery_fee')
+                        ->label(__('admin.restaurant.delivery_fee'))
+                        ->numeric()
+                        ->minValue(0)
+                        ->suffix(__('admin.restaurant.delivery_fee_unit'))
+                        ->placeholder('10000'),
+                ]),
+                Grid::make(2)->components([
+                    TimePicker::make('open_time')
+                        ->label(__('admin.restaurant.open_time'))
+                        ->seconds(false),
+                    TimePicker::make('close_time')
+                        ->label(__('admin.restaurant.close_time'))
+                        ->seconds(false),
+                ]),
+            ]),
+
+            Section::make(__('admin.restaurant.section_rating'))->components([
+                TextInput::make('rating')
+                    ->label(__('admin.restaurant.rating'))
+                    ->numeric()
+                    ->minValue(0)
+                    ->maxValue(5)
+                    ->step(0.1)
+                    ->default(5.0),
+            ]),
+
             Section::make(__('admin.restaurant.section_description'))->components([
                 Textarea::make('description.uz')->label(__('admin.category.name_uz'))->rows(3),
                 Textarea::make('description.en')->label(__('admin.category.name_en'))->rows(3),
@@ -165,15 +201,20 @@ class RestaurantResource extends Resource
                             ]);
                         }
                         $record->update([
-                            'name'        => $data['name'],
-                            'description' => $data['description'] ?? null,
-                            'address'     => $data['address'] ?? null,
-                            'lat'         => $data['lat'] ?? null,
-                            'lng'         => $data['lng'] ?? null,
-                            'logo'        => $data['logo'] ?? $record->logo,
-                            'cover_image' => $data['cover_image'] ?? $record->cover_image,
-                            'phone'       => $data['phone'] ?? null,
-                            'status'      => $data['status'],
+                            'name'          => $data['name'],
+                            'description'   => $data['description'] ?? null,
+                            'address'       => $data['address'] ?? null,
+                            'lat'           => $data['lat'] ?? null,
+                            'lng'           => $data['lng'] ?? null,
+                            'logo'          => $data['logo'] ?? $record->logo,
+                            'cover_image'   => $data['cover_image'] ?? $record->cover_image,
+                            'phone'         => $data['phone'] ?? null,
+                            'status'        => $data['status'],
+                            'delivery_time' => $data['delivery_time'] ?? null,
+                            'delivery_fee'  => $data['delivery_fee'] ?? null,
+                            'open_time'     => $data['open_time'] ?? null,
+                            'close_time'    => $data['close_time'] ?? null,
+                            'rating'        => $data['rating'] ?? 5.0,
                         ]);
                         return $record;
                     }),

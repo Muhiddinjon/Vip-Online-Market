@@ -11,12 +11,14 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
@@ -63,6 +65,11 @@ class CategoryResource extends Resource
                 TextInput::make('name.uz')->label(__('admin.category.name_uz'))->required()->visible(fn($get) => $lang($get) === 'uz')->dehydratedWhenHidden(),
                 TextInput::make('name.en')->label(__('admin.category.name_en'))->visible(fn($get) => $lang($get) === 'en')->dehydratedWhenHidden(),
                 TextInput::make('name.tr')->label(__('admin.category.name_tr'))->visible(fn($get) => $lang($get) === 'tr')->dehydratedWhenHidden(),
+                FileUpload::make('image_path')
+                    ->label(__('admin.category.image'))
+                    ->image()
+                    ->directory('categories')
+                    ->maxSize(2048),
                 Grid::make(2)->components([
                     TextInput::make('sort_order')->label(__('admin.category.sort_order'))->numeric()->default(0),
                     Select::make('status')->label(__('admin.common.status'))->options([
@@ -78,6 +85,7 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
+                ImageColumn::make('image_path')->label('')->circular()->size(36),
                 TextColumn::make('name.uz')->label(__('admin.category.label'))
                     ->getStateUsing(fn ($record) => $record->name['uz'] ?? $record->name['en'] ?? $record->name['tr'] ?? '—')
                     ->searchable()->sortable(),

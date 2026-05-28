@@ -2,10 +2,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Advertisement;
 use App\Models\Branch;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Restaurant;
+use App\Models\ShopCategory;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -32,6 +35,22 @@ class CatalogController extends Controller
         return $path ? Storage::disk('public')->url($path) : null;
     }
 
+    private function isRestaurantOpen(Restaurant $r): bool
+    {
+        if (!$r->open_time || !$r->close_time) return true;
+
+        $now   = Carbon::now()->format('H:i');
+        $open  = substr($r->open_time, 0, 5);
+        $close = substr($r->close_time, 0, 5);
+
+        // Overnight schedule (e.g. 22:00 - 02:00)
+        if ($open > $close) {
+            return $now >= $open || $now <= $close;
+        }
+
+        return $now >= $open && $now <= $close;
+    }
+
     private function formatBranch(Branch $b): array
     {
         return [
@@ -48,16 +67,22 @@ class CatalogController extends Controller
     private function formatRestaurant(Restaurant $r): array
     {
         $data = [
-            'id'          => $r->id,
-            'name'        => $r->name,
-            'description' => $this->localize($r->description),
-            'address'     => $r->address,
-            'lat'         => $r->lat,
-            'lng'         => $r->lng,
-            'logo'        => $this->imageUrl($r->logo),
-            'cover_image' => $this->imageUrl($r->cover_image),
-            'phone'       => $r->phone,
-            'status'      => $r->status,
+            'id'            => $r->id,
+            'name'          => $r->name,
+            'description'   => $this->localize($r->description),
+            'address'       => $r->address,
+            'lat'           => $r->lat,
+            'lng'           => $r->lng,
+            'logo'          => $this->imageUrl($r->logo),
+            'cover_image'   => $this->imageUrl($r->cover_image),
+            'phone'         => $r->phone,
+            'status'        => $r->status,
+            'delivery_time' => $r->delivery_time,
+            'delivery_fee'  => $r->delivery_fee ? (float) $r->delivery_fee : null,
+            'open_time'     => $r->open_time ? substr($r->open_time, 0, 5) : null,
+            'close_time'    => $r->close_time ? substr($r->close_time, 0, 5) : null,
+            'is_open'       => $this->isRestaurantOpen($r),
+            'rating'        => $r->rating ? (float) $r->rating : 5.0,
         ];
 
         if ($r->relationLoaded('branches')) {
@@ -76,20 +101,27 @@ class CatalogController extends Controller
         return [
             'id'         => $c->id,
             'name'       => $this->localize($c->name),
+            'image'      => $this->imageUrl($c->image_path),
             'sort_order' => $c->sort_order,
         ];
     }
 
     private function formatProduct(Product $p): array
     {
+        $price     = (float) $p->price;
+        $sale      = (float) ($p->sale ?? 0);
+        $salePrice = $sale > 0 ? round($price * (1 - $sale / 100), 2) : null;
+
         return [
             'id'             => $p->id,
             'restaurant_id'  => $p->restaurant_id,
             'category_id'    => $p->category_id,
             'name'           => $this->localize($p->name),
             'description'    => $this->localize($p->description),
-            'price'          => (float) $p->price,
+            'price'          => $price,
             'original_price' => $p->original_price ? (float) $p->original_price : null,
+            'sale'           => $sale,
+            'sale_price'     => $salePrice,
             'unit'           => $p->unit,
             'is_available'   => (bool) $p->is_available,
             'images'         => $p->images->map(fn ($img) => $this->imageUrl($img->path))->values()->all(),
@@ -99,7 +131,43 @@ class CatalogController extends Controller
 
     // --------------- Endpoints ---------------
 
-    /** GET /api/restaurants */
+    /** GET /api/catalog/shop-categories */
+    public function shopCategories(): JsonResponse
+    {
+        $categories = ShopCategory::withoutTrashed()
+            ->where('status', true)
+            ->orderBy('sort_order')
+            ->get()
+            ->map(fn ($c) => [
+                'id'         => $c->id,
+                'name'       => $this->localize($c->name),
+                'image'      => $this->imageUrl($c->image),
+                'badge_text' => $c->badge_text,
+                'sort_order' => $c->sort_order,
+            ]);
+
+        return response()->json(['data' => $categories]);
+    }
+
+    /** GET /api/catalog/advertisements */
+    public function advertisements(): JsonResponse
+    {
+        $ads = Advertisement::active()
+            ->orderBy('queue')
+            ->get()
+            ->map(fn ($a) => [
+                'id'         => $a->id,
+                'title'      => $a->title,
+                'image'      => $this->imageUrl($a->image_path),
+                'details'    => $a->details,
+                'url'        => $a->url,
+                'queue'      => $a->queue,
+            ]);
+
+        return response()->json(['data' => $ads]);
+    }
+
+    /** GET /api/catalog/restaurants */
     public function restaurants(Request $request): JsonResponse
     {
         $query = Restaurant::withoutTrashed()
@@ -123,7 +191,7 @@ class CatalogController extends Controller
         ]);
     }
 
-    /** GET /api/restaurants/{id} */
+    /** GET /api/catalog/restaurants/{id} */
     public function restaurant(int $id): JsonResponse
     {
         $restaurant = Restaurant::withoutTrashed()
@@ -157,7 +225,7 @@ class CatalogController extends Controller
         ]);
     }
 
-    /** GET /api/categories */
+    /** GET /api/catalog/categories */
     public function categories(Request $request): JsonResponse
     {
         $categories = Category::withoutTrashed()
@@ -169,7 +237,7 @@ class CatalogController extends Controller
         return response()->json(['data' => $categories]);
     }
 
-    /** GET /api/products */
+    /** GET /api/catalog/products */
     public function products(Request $request): JsonResponse
     {
         $search = trim($request->search ?? '');
@@ -203,7 +271,7 @@ class CatalogController extends Controller
         ]);
     }
 
-    /** GET /api/products/{id} */
+    /** GET /api/catalog/products/{id} */
     public function product(int $id): JsonResponse
     {
         $product = Product::withoutTrashed()

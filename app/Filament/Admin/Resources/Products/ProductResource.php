@@ -82,6 +82,15 @@ class ProductResource extends Resource
                         TextInput::make('original_price')->label(__('admin.product.original_price'))
                             ->numeric()->dehydrated(false)->helperText(__('admin.product.original_price_hint')),
                     ]),
+                    TextInput::make('sale')
+                        ->label(__('admin.product.sale'))
+                        ->numeric()
+                        ->minValue(0)
+                        ->maxValue(100)
+                        ->step(0.1)
+                        ->default(0)
+                        ->suffix('%')
+                        ->helperText(__('admin.product.sale_hint')),
                     Grid::make(2)->components([
                         Select::make(DbSchema::hasColumn('products', 'unit_id') ? 'unit_id' : 'unit')
                             ->label(__('admin.product.unit'))
@@ -146,6 +155,10 @@ class ProductResource extends Resource
                         $record->category?->name['uz'] ?? $record->category?->name['en'] ?? $record->category?->name['tr'] ?? '—'),
                 TextColumn::make('name.uz')->label(__('admin.product.label_uz'))->searchable()->sortable(),
                 TextColumn::make('price')->label(__('admin.product.price'))->money('UZS')->sortable(),
+                TextColumn::make('sale')->label(__('admin.product.sale'))
+                    ->suffix('%')
+                    ->default('0%')
+                    ->color(fn ($state) => $state > 0 ? 'success' : 'gray'),
                 TextColumn::make('unit')->label(__('admin.product.unit')),
                 ToggleColumn::make('is_available')->label(__('admin.product.available')),
                 TextColumn::make('deleted_at')->label(__('admin.common.deleted_at'))->dateTime('d.m.Y')

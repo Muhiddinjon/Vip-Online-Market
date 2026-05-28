@@ -20,11 +20,13 @@ Route::prefix('auth')->group(function () {
 
 // ─── Catalog (public) ──────────────────────────────────────────────────────────
 Route::prefix('catalog')->group(function () {
-    Route::get('/restaurants',     [CatalogController::class, 'restaurants']);
+    Route::get('/shop-categories',  [CatalogController::class, 'shopCategories']);
+    Route::get('/advertisements',   [CatalogController::class, 'advertisements']);
+    Route::get('/restaurants',      [CatalogController::class, 'restaurants']);
     Route::get('/restaurants/{id}', [CatalogController::class, 'restaurant']);
-    Route::get('/categories',      [CatalogController::class, 'categories']);
-    Route::get('/products',        [CatalogController::class, 'products']);
-    Route::get('/products/{id}',   [CatalogController::class, 'product']);
+    Route::get('/categories',       [CatalogController::class, 'categories']);
+    Route::get('/products',         [CatalogController::class, 'products']);
+    Route::get('/products/{id}',    [CatalogController::class, 'product']);
 });
 
 // ─── Orders (requires auth) ────────────────────────────────────────────────────
