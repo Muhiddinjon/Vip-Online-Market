@@ -175,9 +175,18 @@ class CatalogController extends Controller
             ->with(['branches' => fn ($q) => $q->where('status', 'active')->orderBy('name')])
             ->where('status', 'active')
             ->when($request->search, fn ($q) => $q->where('name', 'LIKE', "%{$request->search}%"))
-            ->when($request->sort === 'name_asc',  fn ($q) => $q->orderBy('name'))
-            ->when($request->sort === 'name_desc', fn ($q) => $q->orderByDesc('name'))
-            ->unless($request->sort, fn ($q) => $q->orderBy('id'));
+            ->when($request->filled('category_ids'), function ($q) use ($request) {
+                $ids = array_filter(array_map('intval', explode(',', $request->category_ids)));
+                $q->whereHas('products', fn ($pq) => $pq->whereIn('category_id', $ids)->where('is_available', true));
+            });
+
+        match($request->sort) {
+            'rating_desc' => $query->orderBy('rating', 'desc'),
+            'rating_asc'  => $query->orderBy('rating', 'asc'),
+            'name_asc'    => $query->orderBy('name', 'asc'),
+            'name_desc'   => $query->orderBy('name', 'desc'),
+            default       => $query->orderBy('id'),
+        };
 
         $restaurants = $query->paginate((int) ($request->per_page ?? 20));
 
