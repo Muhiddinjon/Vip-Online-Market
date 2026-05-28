@@ -231,7 +231,7 @@ class CatalogController extends Controller
     {
         $categories = Category::withoutTrashed()
             ->where('status', 'active')
-            ->orderBy('queue')
+            ->orderBy('sort_order')
             ->get()
             ->map(fn ($c) => $this->formatCategory($c));
 
