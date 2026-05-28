@@ -135,7 +135,6 @@ class CatalogController extends Controller
     public function shopCategories(): JsonResponse
     {
         $categories = ShopCategory::withoutTrashed()
-            ->where('status', true)
             ->orderBy('sort_order')
             ->get()
             ->map(fn ($c) => [

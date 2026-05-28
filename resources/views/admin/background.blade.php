@@ -75,6 +75,18 @@
         border-color: rgba(255, 255, 255, 0.06) !important;
     }
 
+    /* ── Select dropdown z-index fix ──
+       backdrop-filter creates a stacking context, so a section below
+       always paints over the open dropdown of a section above it.
+       :focus-within elevates the active section while the select is open. */
+    .fi-section {
+        position: relative;
+        z-index: 1;
+    }
+    .fi-section:focus-within {
+        z-index: 20 !important;
+    }
+
     /* ── Dashboard widgets ── */
     .fi-wi-stats-overview-stat {
         background: rgba(10, 10, 20, 0.94) !important;
