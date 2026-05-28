@@ -142,6 +142,7 @@ class CatalogController extends Controller
                 'name'       => $this->localize($c->name),
                 'image'      => $this->imageUrl($c->image),
                 'badge_text' => $c->badge_text,
+                'status' => $c->status,
                 'sort_order' => $c->sort_order,
             ]);
 
