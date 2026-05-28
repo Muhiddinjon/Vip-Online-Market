@@ -52,6 +52,7 @@ return [
         'sort_order'    => 'Sıralama',
         'products'      => 'Ürünler',
         'image'         => 'Görsel',
+        'shown_in_main' => 'Ana Sayfada Göster',
     ],
 
     // User

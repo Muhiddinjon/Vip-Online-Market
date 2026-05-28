@@ -14,10 +14,12 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -76,6 +78,7 @@ class CategoryResource extends Resource
                         'active'   => __('admin.common.active'),
                         'inactive' => __('admin.common.inactive'),
                     ])->default('active')->required(),
+                    Toggle::make('shown_in_main')->label(__('admin.category.shown_in_main'))->default(false)->columnSpanFull(),
                 ]),
             ]),
         ]);
@@ -93,6 +96,7 @@ class CategoryResource extends Resource
                 TextColumn::make('name.tr')->label('TR')->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('products_count')->label(__('admin.category.products'))->counts('products')->sortable(),
                 TextColumn::make('sort_order')->label(__('admin.category.sort_order'))->sortable(),
+                IconColumn::make('shown_in_main')->label(__('admin.category.shown_in_main'))->boolean(),
                 TextColumn::make('status')->label(__('admin.common.status'))->badge()
                     ->color(fn ($state) => $state === 'active' ? 'success' : 'gray')
                     ->formatStateUsing(fn ($state) => $state === 'active' ? __('admin.common.active') : __('admin.common.inactive')),

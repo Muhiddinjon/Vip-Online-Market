@@ -52,6 +52,7 @@ return [
         'sort_order'    => 'Sort Order',
         'products'      => 'Products',
         'image'         => 'Image',
+        'shown_in_main' => 'Show on Main Page',
     ],
 
     // User

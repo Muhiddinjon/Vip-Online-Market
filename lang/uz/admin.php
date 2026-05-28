@@ -49,9 +49,10 @@ return [
         'name_uz'    => 'Nomi (UZ)',
         'name_en'    => 'Name (EN)',
         'name_tr'    => 'İsim (TR)',
-        'sort_order' => 'Tartib',
-        'products'   => 'Mahsulotlar',
-        'image'      => 'Rasm',
+        'sort_order'    => 'Tartib',
+        'products'      => 'Mahsulotlar',
+        'image'         => 'Rasm',
+        'shown_in_main' => 'Bosh oynada ko\'rinish',
     ],
 
     // User

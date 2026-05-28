@@ -99,10 +99,11 @@ class CatalogController extends Controller
     private function formatCategory(Category $c): array
     {
         return [
-            'id'         => $c->id,
-            'name'       => $this->localize($c->name),
-            'image'      => $this->imageUrl($c->image_path),
-            'sort_order' => $c->sort_order,
+            'id'             => $c->id,
+            'name'           => $this->localize($c->name),
+            'image'          => $this->imageUrl($c->image_path),
+            'sort_order'     => $c->sort_order,
+            'shown_in_main'  => (bool) $c->shown_in_main,
         ];
     }
 
@@ -230,7 +231,7 @@ class CatalogController extends Controller
     {
         $categories = Category::withoutTrashed()
             ->where('status', 'active')
-            ->orderBy('sort_order')
+            ->orderBy('queue')
             ->get()
             ->map(fn ($c) => $this->formatCategory($c));
 
