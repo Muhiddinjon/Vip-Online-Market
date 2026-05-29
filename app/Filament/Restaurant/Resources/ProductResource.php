@@ -62,7 +62,7 @@ class ProductResource extends Resource
                     Grid::make(2)->components([
                         TextInput::make('price')->label(__('admin.product.price'))->numeric()->required(),
                         TextInput::make('original_price')->label(__('admin.product.original_price'))
-                            ->numeric()->dehydrated(false)->helperText(__('admin.product.original_price_hint')),
+                            ->numeric()->helperText(__('admin.product.original_price_hint')),
                     ]),
                     Grid::make(2)->components([
                         Select::make(DbSchema::hasColumn('products', 'unit_id') ? 'unit_id' : 'unit')
