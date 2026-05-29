@@ -169,6 +169,7 @@ return [
         'note'              => 'Izoh',
         'print'             => 'Chop etish',
         'reject_reason'     => 'Rad etish sababi',
+        'cancel_reason'     => 'Bekor qilish sababi',
         'view_on_map'       => 'Xaritada ko\'rish',
         'today_orders'      => 'Bugungi buyurtmalar',
         'pending_orders'    => 'Kutilayotgan',

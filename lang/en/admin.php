@@ -169,6 +169,7 @@ return [
         'note'              => 'Note',
         'print'             => 'Print',
         'reject_reason'     => 'Rejection Reason',
+        'cancel_reason'     => 'Cancellation Reason',
         'view_on_map'       => 'View on Map',
         'today_orders'      => "Today's Orders",
         'pending_orders'    => 'Pending',

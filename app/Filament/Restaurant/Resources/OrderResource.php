@@ -105,6 +105,9 @@ class OrderResource extends Resource
                             TextEntry::make('reject_reason')->label(__('admin.order.reject_reason'))
                                 ->placeholder('—')->columnSpanFull()
                                 ->hidden(fn (Order $record) => empty($record->reject_reason)),
+                            TextEntry::make('cancel_reason')->label(__('admin.order.cancel_reason'))
+                                ->placeholder('—')->columnSpanFull()
+                                ->hidden(fn (Order $record) => empty($record->cancel_reason)),
                         ])->columns(2),
                         InfoSection::make(__('admin.order.items'))->schema([
                             RepeatableEntry::make('items')->schema([

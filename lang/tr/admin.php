@@ -169,6 +169,7 @@ return [
         'note'              => 'Not',
         'print'             => 'Yazdır',
         'reject_reason'     => 'Red Gerekçesi',
+        'cancel_reason'     => 'İptal Gerekçesi',
         'view_on_map'       => 'Haritada Gör',
         'today_orders'      => 'Bugünkü Siparişler',
         'pending_orders'    => 'Bekleyenler',

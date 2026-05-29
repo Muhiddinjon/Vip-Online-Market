@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 
 class OrderController extends Controller
 {
-    private static array $cancelableStatuses = ['pending', 'confirmed'];
+    private static array $cancelableStatuses = ['pending', 'confirmed', 'preparing'];
 
     private function customer(): Customer
     {
@@ -44,6 +44,7 @@ class OrderController extends Controller
             'delivery_lat'     => $order->delivery_lat,
             'delivery_lng'     => $order->delivery_lng,
             'note'             => $order->note,
+            'cancel_reason'    => $order->cancel_reason,
             'can_cancel'       => in_array($order->status, self::$cancelableStatuses),
             'created_at'       => $order->created_at?->toIso8601String(),
             'restaurant'       => $order->restaurant ? [
@@ -199,7 +200,7 @@ class OrderController extends Controller
     }
 
     /** POST /api/orders/{id}/cancel — Buyurtmani bekor qilish */
-    public function cancel(int $id): JsonResponse
+    public function cancel(int $id, Request $request): JsonResponse
     {
         $customer = $this->customer();
 
@@ -213,7 +214,10 @@ class OrderController extends Controller
             ], 422);
         }
 
-        $order->update(['status' => 'cancelled']);
+        $order->update([
+            'status'        => 'cancelled',
+            'cancel_reason' => $request->input('reason'),
+        ]);
 
         return response()->json(['data' => $this->formatOrder($order)]);
     }
