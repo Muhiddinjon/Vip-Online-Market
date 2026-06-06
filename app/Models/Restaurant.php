@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Restaurant extends Model
 {
     use SoftDeletes;
-    protected $fillable = ['user_id','name','description','address','lat','lng','logo','cover_image','phone','working_hours','status','delivery_time','delivery_fee','open_time','close_time','rating'];
+    protected $fillable = ['user_id','name','description','address','lat','lng','logo','cover_image','phone','working_hours','status','delivery_time','delivery_fee','open_time','close_time','rating','queue'];
     protected $casts = [
         'working_hours' => 'array',
         'description'   => 'array',
@@ -16,6 +16,7 @@ class Restaurant extends Model
         'delivery_time' => 'integer',
         'delivery_fee'  => 'float',
         'rating'        => 'float',
+        'queue'         => 'integer',
     ];
 
     public function user()     { return $this->belongsTo(User::class); }

@@ -94,6 +94,11 @@ class ProductResource extends Resource
                     ]),
 
                 Section::make(__('admin.product.section_variants'))->components([
+                    Toggle::make('variants_image_visible')
+                        ->label(__('admin.product.variants_image_visible'))
+                        ->helperText(__('admin.product.variants_image_visible_hint'))
+                        ->default(false)
+                        ->inline(false),
                     Repeater::make('variants')
                         ->label('')
                         ->schema([
@@ -149,7 +154,9 @@ class ProductResource extends Resource
                         $data['images']     = $record->images()->pluck('path')->toArray();
                         $data['branch_ids'] = $record->branches()->wherePivot('is_available', true)
                             ->pluck('branches.id')->toArray();
-                        $data['variants']   = $record->variants()->orderBy('sort_order')->get()
+                        $variants = $record->variants()->orderBy('sort_order')->get();
+                        $data['variants_image_visible'] = $variants->first()?->image_visible ?? false;
+                        $data['variants'] = $variants
                             ->map(fn ($v) => ['name' => $v->name, 'price' => $v->price, 'sort_order' => $v->sort_order])
                             ->toArray();
                         return $data;

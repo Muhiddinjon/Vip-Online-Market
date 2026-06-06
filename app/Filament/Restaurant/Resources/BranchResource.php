@@ -51,10 +51,13 @@ class BranchResource extends Resource
                     TextInput::make('name')->label(__('admin.branch.name'))->required(),
                     TextInput::make('phone')->label(__('admin.courier.phone'))->tel(),
                 ]),
-                Select::make('status')->label(__('admin.common.status'))->options([
-                    'active'   => __('admin.common.active'),
-                    'inactive' => __('admin.common.inactive'),
-                ])->required()->default('active'),
+                Grid::make(2)->components([
+                    Select::make('status')->label(__('admin.common.status'))->options([
+                        'active'   => __('admin.common.active'),
+                        'inactive' => __('admin.common.inactive'),
+                    ])->required()->default('active'),
+                    TextInput::make('queue')->label(__('admin.restaurant.queue'))->numeric()->default(0),
+                ]),
             ]),
 
             Section::make(__('admin.restaurant.section_address'))->components([
@@ -80,6 +83,7 @@ class BranchResource extends Resource
                 TextColumn::make('status')->label(__('admin.common.status'))->badge()
                     ->color(fn ($state) => $state === 'active' ? 'success' : 'warning')
                     ->formatStateUsing(fn ($state) => $state === 'active' ? __('admin.common.active') : __('admin.common.inactive')),
+                TextColumn::make('queue')->label(__('admin.restaurant.queue'))->sortable(),
                 TextColumn::make('products_count')->label(__('admin.branch.products_count'))
                     ->counts('products')->sortable(),
             ])

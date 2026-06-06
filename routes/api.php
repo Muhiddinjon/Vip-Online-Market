@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Auth\OtpController;
 use App\Http\Controllers\Api\CatalogController;
+use App\Http\Controllers\Api\ConfigController;
 use App\Http\Controllers\Api\DeleteAccountController;
 use App\Http\Controllers\Api\OrderController;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +30,9 @@ Route::prefix('catalog')->group(function () {
     Route::get('/products',         [CatalogController::class, 'products']);
     Route::get('/products/{id}',    [CatalogController::class, 'product']);
 });
+
+// ─── App config (public) ──────────────────────────────────────────────────────
+Route::get('/config', [ConfigController::class, 'index']);
 
 // ─── Account deletion (public — OTP is the verification) ──────────────────────
 Route::prefix('account')->group(function () {

@@ -112,6 +112,7 @@ return [
         'open_time'           => 'Açılış Saati',
         'close_time'          => 'Kapanış Saati',
         'rating'              => 'Puan (0-5)',
+        'queue'               => 'Sıra',
     ],
 
     // Advertisement
@@ -202,8 +203,10 @@ return [
         'section_name'       => 'Ad ve Açıklama',
         'section_image'        => 'Görsel',
         'section_images'       => 'Görseller',
-        'section_variants'     => 'Varyantlar',
-        'variant_add'          => 'Varyant Ekle',
+        'section_variants'              => 'Varyantlar',
+        'variant_add'                   => 'Varyant Ekle',
+        'variants_image_visible'        => 'Görselli gösterim',
+        'variants_image_visible_hint'   => 'Açıksa — tüm varyantlar ürün görseli ile birlikte görünür',
         'section_price'        => 'Fiyat & Ayarlar',
         'desc_uz'              => 'Açıklama (UZ)',
         'desc_en'              => 'Description (EN)',
@@ -240,6 +243,19 @@ return [
     ],
 
     // Auth
+    'config' => [
+        'nav_label'       => 'Ayarlar',
+        'title'           => 'Ayar adı',
+        'keyword'         => 'Anahtar kelime',
+        'value'           => 'Değer',
+        'type'            => 'Tür',
+        'platform'        => 'Client API',
+        'platform_public' => 'Client uygulamaya iletilir',
+        'platform_private'=> 'Yalnızca sunucu tarafı',
+        'text_hint'       => 'Değer girin',
+        'textarea_hint'   => 'Birden fazla değer için noktalı virgül (;) kullanın',
+    ],
+
     'auth' => [
         'back_to_home' => 'Ana sayfaya dön',
     ],

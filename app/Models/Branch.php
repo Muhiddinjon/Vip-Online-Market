@@ -8,11 +8,12 @@ class Branch extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['restaurant_id', 'name', 'address', 'lat', 'lng', 'phone', 'working_hours', 'status'];
+    protected $fillable = ['restaurant_id', 'name', 'address', 'lat', 'lng', 'phone', 'working_hours', 'status', 'queue'];
     protected $casts = [
         'working_hours' => 'array',
         'lat'           => 'float',
         'lng'           => 'float',
+        'queue'         => 'integer',
     ];
 
     public function restaurant() { return $this->belongsTo(Restaurant::class); }

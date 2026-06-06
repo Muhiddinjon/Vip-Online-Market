@@ -119,13 +119,19 @@ class RestaurantResource extends Resource
             ]),
 
             Section::make(__('admin.restaurant.section_rating'))->components([
-                TextInput::make('rating')
-                    ->label(__('admin.restaurant.rating'))
-                    ->numeric()
-                    ->minValue(0)
-                    ->maxValue(5)
-                    ->step(0.1)
-                    ->default(5.0),
+                Grid::make(2)->components([
+                    TextInput::make('rating')
+                        ->label(__('admin.restaurant.rating'))
+                        ->numeric()
+                        ->minValue(0)
+                        ->maxValue(5)
+                        ->step(0.1)
+                        ->default(5.0),
+                    TextInput::make('queue')
+                        ->label(__('admin.restaurant.queue'))
+                        ->numeric()
+                        ->default(0),
+                ]),
             ]),
 
             Section::make(__('admin.restaurant.section_description'))->components([
@@ -173,6 +179,7 @@ class RestaurantResource extends Resource
                         'blocked'  => __('admin.common.blocked'),
                         default    => $state,
                     }),
+                TextColumn::make('queue')->label(__('admin.restaurant.queue'))->sortable(),
                 TextColumn::make('orders_count')->label(__('admin.restaurant.orders'))->counts('orders')->sortable(),
                 TextColumn::make('deleted_at')->label(__('admin.common.deleted_at'))->dateTime('d.m.Y')->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -215,6 +222,7 @@ class RestaurantResource extends Resource
                             'open_time'     => $data['open_time'] ?? null,
                             'close_time'    => $data['close_time'] ?? null,
                             'rating'        => $data['rating'] ?? 5.0,
+                            'queue'         => $data['queue'] ?? 0,
                         ]);
                         return $record;
                     }),
@@ -241,7 +249,8 @@ class RestaurantResource extends Resource
                     RestoreBulkAction::make()->label(__('admin.common.restore')),
                     ForceDeleteBulkAction::make()->label(__('admin.common.force_delete')),
                 ]),
-            ]);
+            ])
+            ->defaultSort('queue');
     }
 
     public static function getRelations(): array { return []; }

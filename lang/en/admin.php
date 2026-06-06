@@ -112,6 +112,7 @@ return [
         'open_time'           => 'Opening Time',
         'close_time'          => 'Closing Time',
         'rating'              => 'Rating (0-5)',
+        'queue'               => 'Queue',
     ],
 
     // Advertisement
@@ -202,8 +203,10 @@ return [
         'section_name'       => 'Name & Description',
         'section_image'        => 'Image',
         'section_images'       => 'Images',
-        'section_variants'     => 'Variants',
-        'variant_add'          => 'Add Variant',
+        'section_variants'              => 'Variants',
+        'variant_add'                   => 'Add Variant',
+        'variants_image_visible'        => 'Show with image',
+        'variants_image_visible_hint'   => 'If enabled — all variants are displayed with the product image',
         'section_price'        => 'Price & Settings',
         'desc_uz'              => 'Description (UZ)',
         'desc_en'              => 'Description (EN)',
@@ -240,6 +243,19 @@ return [
     ],
 
     // Auth
+    'config' => [
+        'nav_label'       => 'Settings',
+        'title'           => 'Setting name',
+        'keyword'         => 'Keyword',
+        'value'           => 'Value',
+        'type'            => 'Type',
+        'platform'        => 'Client API',
+        'platform_public' => 'Exposed to client app',
+        'platform_private'=> 'Server-side only',
+        'text_hint'       => 'Enter a value',
+        'textarea_hint'   => 'Use semicolon (;) to separate multiple values',
+    ],
+
     'auth' => [
         'back_to_home' => 'Back to home',
     ],

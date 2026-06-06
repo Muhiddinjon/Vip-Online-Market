@@ -62,6 +62,7 @@ class CatalogController extends Controller
             'lng'     => $b->lng,
             'phone'   => $b->phone,
             'status'  => $b->status,
+            'queue'   => $b->queue,
         ];
     }
 
@@ -84,6 +85,7 @@ class CatalogController extends Controller
             'close_time'    => $r->close_time ? substr($r->close_time, 0, 5) : null,
             'is_open'       => $this->isRestaurantOpen($r),
             'rating'        => $r->rating ? (float) $r->rating : 5.0,
+            'queue'         => $r->queue,
         ];
 
         if ($r->relationLoaded('branches')) {
@@ -116,9 +118,10 @@ class CatalogController extends Controller
 
         $variants = $p->relationLoaded('variants')
             ? $p->variants->map(fn ($v) => [
-                'id'    => $v->id,
-                'name'  => $this->localize($v->name),
-                'price' => (float) $v->price,
+                'id'            => $v->id,
+                'name'          => $this->localize($v->name),
+                'price'         => (float) $v->price,
+                'image_visible' => (bool) $v->image_visible,
             ])->values()->all()
             : [];
 
@@ -195,7 +198,7 @@ class CatalogController extends Controller
             'rating_asc'  => $query->orderBy('rating', 'asc'),
             'name_asc'    => $query->orderBy('name', 'asc'),
             'name_desc'   => $query->orderBy('name', 'desc'),
-            default       => $query->orderBy('id'),
+            default       => $query->orderBy('queue'),
         };
 
         $restaurants = $query->paginate((int) ($request->per_page ?? 20));

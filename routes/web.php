@@ -8,6 +8,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/license', function () {
+    return view('license');
+})->name('license');
+
 Route::post('/locale/switch', function (Request $request) {
     $locale = $request->input('locale');
     if (in_array($locale, ['uz', 'tr', 'en'])) {

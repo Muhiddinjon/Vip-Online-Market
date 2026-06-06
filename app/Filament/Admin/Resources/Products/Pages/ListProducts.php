@@ -30,12 +30,14 @@ class ListProducts extends ListRecords
     public static function syncVariants(Product $record, array $data): void
     {
         $record->variants()->delete();
+        $imageVisible = (bool) ($data['variants_image_visible'] ?? false);
         foreach ($data['variants'] ?? [] as $i => $row) {
             if (empty($row['name']['uz'] ?? null) || !isset($row['price'])) continue;
             $record->variants()->create([
-                'name'       => $row['name'],
-                'price'      => $row['price'],
-                'sort_order' => $row['sort_order'] ?? $i,
+                'name'          => $row['name'],
+                'price'         => $row['price'],
+                'sort_order'    => $row['sort_order'] ?? $i,
+                'image_visible' => $imageVisible,
             ]);
         }
     }

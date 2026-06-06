@@ -112,6 +112,7 @@ return [
         'open_time'          => 'Ochilish vaqti',
         'close_time'         => 'Yopilish vaqti',
         'rating'             => 'Reyting (0-5)',
+        'queue'              => 'Tartib (queue)',
     ],
 
     // Advertisement
@@ -202,8 +203,10 @@ return [
         'section_name'    => 'Nomi va Tavsif',
         'section_image'        => 'Rasm',
         'section_images'       => 'Rasmlar',
-        'section_variants'     => 'Variantlar',
-        'variant_add'          => 'Variant qo\'shish',
+        'section_variants'              => 'Variantlar',
+        'variant_add'                   => 'Variant qo\'shish',
+        'variants_image_visible'        => 'Rasimli ko\'rinish',
+        'variants_image_visible_hint'   => 'Yoqilsa — barcha variantlar mahsulot rasmi bilan ko\'rinadi',
         'section_price'        => 'Narx & Sozlamalar',
         'desc_uz'              => 'Tavsif (UZ)',
         'desc_en'              => 'Description (EN)',
@@ -237,6 +240,20 @@ return [
         'cancelled_not'    => 'Bekor qilinmagan',
         'in_progress'      => 'Bajarilishi kutilmoqda',
         'total'            => 'Jami',
+    ],
+
+    // Config
+    'config' => [
+        'nav_label'       => 'Sozlamalar',
+        'title'           => 'Sozlama nomi',
+        'keyword'         => 'Kalit so\'z',
+        'value'           => 'Qiymat',
+        'type'            => 'Tur',
+        'platform'        => 'Client API',
+        'platform_public' => 'Client APPga uzatiladi',
+        'platform_private'=> 'Faqat server tomonida',
+        'text_hint'       => 'Matn kiritng',
+        'textarea_hint'   => 'Bir nechta qiymat kiritish uchun nuqtali vergul (;) dan foydalaning',
     ],
 
     // Auth
