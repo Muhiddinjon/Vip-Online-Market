@@ -22,14 +22,26 @@ class ListProducts extends ListRecords
                     return $data;
                 })
                 ->after(function (Product $record, array $data): void {
-                    // Images
                     foreach ($data['images'] ?? [] as $i => $path) {
                         if ($path) $record->images()->create(['path' => $path, 'sort_order' => $i]);
                     }
-                    // Branch availability
                     static::syncBranches($record, $data);
+                    static::syncVariants($record, $data);
                 }),
         ];
+    }
+
+    public static function syncVariants(Product $record, array $data): void
+    {
+        $record->variants()->delete();
+        foreach ($data['variants'] ?? [] as $i => $row) {
+            if (empty($row['name']['uz'] ?? null) || !isset($row['price'])) continue;
+            $record->variants()->create([
+                'name'       => $row['name'],
+                'price'      => $row['price'],
+                'sort_order' => $row['sort_order'] ?? $i,
+            ]);
+        }
     }
 
     public static function syncBranches(Product $record, array $data): void

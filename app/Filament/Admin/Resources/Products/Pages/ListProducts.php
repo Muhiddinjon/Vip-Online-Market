@@ -18,16 +18,26 @@ class ListProducts extends ListRecords
                 ->label(__('admin.product.create'))
                 ->createAnother(false)
                 ->after(function (Product $record, array $data): void {
-
-                $paths = array_values(array_filter($data['uploaded_images'] ?? []));
-
-                    foreach ($paths as $i => $path) {
+                    foreach (array_values(array_filter($data['uploaded_images'] ?? [])) as $i => $path) {
                         $record->images()->create(['path' => $path, 'sort_order' => $i]);
                     }
-                    // Branch availability
                     static::syncBranches($record, $data);
+                    static::syncVariants($record, $data);
                 }),
         ];
+    }
+
+    public static function syncVariants(Product $record, array $data): void
+    {
+        $record->variants()->delete();
+        foreach ($data['variants'] ?? [] as $i => $row) {
+            if (empty($row['name']['uz'] ?? null) || !isset($row['price'])) continue;
+            $record->variants()->create([
+                'name'       => $row['name'],
+                'price'      => $row['price'],
+                'sort_order' => $row['sort_order'] ?? $i,
+            ]);
+        }
     }
 
     public static function syncBranches(Product $record, array $data): void

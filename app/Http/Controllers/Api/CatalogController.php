@@ -6,6 +6,7 @@ use App\Models\Advertisement;
 use App\Models\Branch;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\Restaurant;
 use App\Models\ShopCategory;
 use Carbon\Carbon;
@@ -113,6 +114,14 @@ class CatalogController extends Controller
         $sale      = (float) ($p->sale ?? 0);
         $salePrice = $sale > 0 ? round($price * (1 - $sale / 100), 2) : null;
 
+        $variants = $p->relationLoaded('variants')
+            ? $p->variants->map(fn ($v) => [
+                'id'    => $v->id,
+                'name'  => $this->localize($v->name),
+                'price' => (float) $v->price,
+            ])->values()->all()
+            : [];
+
         return [
             'id'             => $p->id,
             'restaurant_id'  => $p->restaurant_id,
@@ -127,6 +136,7 @@ class CatalogController extends Controller
             'is_available'   => (bool) $p->is_available,
             'images'         => $p->images->map(fn ($img) => $this->imageUrl($img->path))->values()->all(),
             'image'          => $this->imageUrl($p->images->first()?->path),
+            'variants'       => $variants,
         ];
     }
 
@@ -215,7 +225,7 @@ class CatalogController extends Controller
             ->get();
 
         $products = Product::withoutTrashed()
-            ->with('images')
+            ->with(['images', 'variants'])
             ->where('restaurant_id', $id)
             ->where('is_available', true)
             ->get();
@@ -253,7 +263,7 @@ class CatalogController extends Controller
         $search = trim($request->search ?? '');
 
         $query = Product::withoutTrashed()
-            ->with('images')
+            ->with(['images', 'variants'])
             ->where('is_available', true)
             ->when($request->restaurant_id, fn ($q) => $q->where('restaurant_id', $request->restaurant_id))
             ->when($request->category_id,   fn ($q) => $q->where('category_id',   $request->category_id))
@@ -285,7 +295,7 @@ class CatalogController extends Controller
     public function product(int $id): JsonResponse
     {
         $product = Product::withoutTrashed()
-            ->with('images')
+            ->with(['images', 'variants'])
             ->where('is_available', true)
             ->findOrFail($id);
 

@@ -114,10 +114,13 @@ class OrderResource extends Resource
                         InfoSection::make(__('admin.order.items'))->schema([
                             RepeatableEntry::make('items')->schema([
                                 TextEntry::make('name')->label(__('admin.order.item_name')),
+                                TextEntry::make('variant_name')->label(__('admin.order.variant'))
+                                    ->placeholder('—')
+                                    ->badge()->color('primary'),
                                 TextEntry::make('quantity')->label(__('admin.order.quantity')),
                                 TextEntry::make('price')->label(__('admin.order.price'))->money('UZS'),
                                 TextEntry::make('unit')->label(__('admin.order.unit')),
-                            ])->columns(4),
+                            ])->columns(5),
                         ]),
                     ]),
 

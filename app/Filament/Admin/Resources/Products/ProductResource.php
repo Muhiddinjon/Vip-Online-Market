@@ -17,6 +17,7 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -119,6 +120,24 @@ class ProductResource extends Resource
                             ->helperText(__('admin.branch.availability_hint')),
                     ]),
 
+                Section::make(__('admin.product.section_variants'))->components([
+                    Repeater::make('variants')
+                        ->label('')
+                        ->schema([
+                            TextInput::make('name.uz')->label(__('admin.category.name_uz'))->required(),
+                            TextInput::make('name.en')->label(__('admin.category.name_en')),
+                            TextInput::make('name.tr')->label(__('admin.category.name_tr')),
+                            TextInput::make('price')->label(__('admin.product.price'))->numeric()->required(),
+                            TextInput::make('sort_order')->label(__('admin.category.sort_order'))->numeric()->default(0),
+                        ])
+                        ->columns(2)
+                        ->addActionLabel(__('admin.product.variant_add'))
+                        ->defaultItems(0)
+                        ->collapsible()
+                        ->reorderableWithButtons()
+                        ->cloneable(),
+                ]),
+
                 Section::make(__('admin.product.section_images'))->components([
                     FileUpload::make('uploaded_images')
                         ->label(__('admin.product.images'))
@@ -173,23 +192,21 @@ class ProductResource extends Resource
                 EditAction::make()
                     ->label('')->tooltip(__('admin.common.edit'))
                     ->mutateRecordDataUsing(function (array $data, Product $record): array {
-
-                        $data['images']     = $record->images()->pluck('path')->toArray();
-                        $data['branch_ids'] = $record->branches()->wherePivot('is_available', true)
-                            ->pluck('branches.id')->toArray();
-
                         $data['uploaded_images'] = $record->images()->pluck('path')->toArray();
-
+                        $data['branch_ids']      = $record->branches()->wherePivot('is_available', true)
+                            ->pluck('branches.id')->toArray();
+                        $data['variants']        = $record->variants()->orderBy('sort_order')->get()
+                            ->map(fn ($v) => ['name' => $v->name, 'price' => $v->price, 'sort_order' => $v->sort_order])
+                            ->toArray();
                         return $data;
                     })
                     ->after(function (Product $record, array $data): void {
                         $record->images()->delete();
-                        $paths = array_values(array_filter($data['uploaded_images'] ?? []));
-                        foreach ($paths as $i => $path) {
-
+                        foreach (array_values(array_filter($data['uploaded_images'] ?? [])) as $i => $path) {
                             $record->images()->create(['path' => $path, 'sort_order' => $i]);
                         }
                         ListProducts::syncBranches($record, $data);
+                        ListProducts::syncVariants($record, $data);
                     }),
                 RestoreAction::make()->label('')->tooltip(__('admin.common.restore')),
                 DeleteAction::make()->label('')->tooltip(__('admin.common.delete')),

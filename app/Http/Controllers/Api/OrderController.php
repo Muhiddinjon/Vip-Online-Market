@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -53,14 +54,16 @@ class OrderController extends Controller
                 'logo' => $this->imageUrl($order->restaurant->logo),
             ] : null,
             'items' => $order->items->map(fn ($item) => [
-                'id'         => $item->id,
-                'product_id' => $item->product_id,
-                'name'       => $item->name,
-                'price'      => (float) $item->price,
-                'quantity'   => $item->quantity,
-                'unit'       => $item->unit,
-                'subtotal'   => round($item->price * $item->quantity, 2),
-                'image'      => $this->imageUrl($item->product?->images->first()?->path),
+                'id'           => $item->id,
+                'product_id'   => $item->product_id,
+                'variant_id'   => $item->variant_id,
+                'variant_name' => $item->variant_name,
+                'name'         => $item->name,
+                'price'        => (float) $item->price,
+                'quantity'     => $item->quantity,
+                'unit'         => $item->unit,
+                'subtotal'     => round($item->price * $item->quantity, 2),
+                'image'        => $this->imageUrl($item->product?->images->first()?->path),
             ])->all(),
         ];
     }
@@ -118,15 +121,16 @@ class OrderController extends Controller
     public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'restaurant_id'    => 'required|integer|exists:restaurants,id',
-            'items'            => 'required|array|min:1',
+            'restaurant_id'      => 'required|integer|exists:restaurants,id',
+            'items'              => 'required|array|min:1',
             'items.*.product_id' => 'required|integer',
+            'items.*.variant_id' => 'nullable|integer',
             'items.*.quantity'   => 'required|integer|min:1|max:99',
-            'payment_method'   => 'required|in:cash,card',
-            'delivery_address' => 'nullable|string|max:500',
-            'delivery_lat'     => 'nullable|numeric',
-            'delivery_lng'     => 'nullable|numeric',
-            'note'             => 'nullable|string|max:500',
+            'payment_method'     => 'required|in:cash,card',
+            'delivery_address'   => 'nullable|string|max:500',
+            'delivery_lat'       => 'nullable|numeric',
+            'delivery_lng'       => 'nullable|numeric',
+            'note'               => 'nullable|string|max:500',
         ]);
 
         $customer     = $this->customer();
@@ -138,7 +142,7 @@ class OrderController extends Controller
             ->whereIn('id', $productIds)
             ->where('restaurant_id', $restaurantId)
             ->where('is_available', true)
-            ->with('images')
+            ->with(['images', 'variants'])
             ->get()
             ->keyBy('id');
 
@@ -150,23 +154,46 @@ class OrderController extends Controller
             }
         }
 
+        // Variant ID larni yuklash
+        $variantIds = collect($request->items)->pluck('variant_id')->filter()->unique()->all();
+        $variants   = $variantIds
+            ? ProductVariant::whereIn('id', $variantIds)->get()->keyBy('id')
+            : collect();
+
         // Narxlarni hisoblash
-        $subtotal = 0;
+        $subtotal  = 0;
         $lineItems = [];
         foreach ($request->items as $item) {
-            $product   = $products[$item['product_id']];
-            $price     = (float) $product->price;
-            $qty       = (int) $item['quantity'];
+            $product  = $products[$item['product_id']];
+            $qty      = (int) $item['quantity'];
+            $locale   = app()->getLocale();
+
+            $variantId   = $item['variant_id'] ?? null;
+            $variant     = $variantId ? ($variants[$variantId] ?? null) : null;
+
+            // Variant ushbu mahsulotga tegishli ekanligini tekshirish
+            if ($variant && $variant->product_id !== $product->id) {
+                return response()->json([
+                    'message' => "Variant #{$variantId} bu mahsulotga tegishli emas.",
+                ], 422);
+            }
+
+            $price    = $variant ? (float) $variant->price : (float) $product->price;
             $subtotal += $price * $qty;
 
-            $langName = $product->name[app()->getLocale()] ?? $product->name['uz'] ?? $product->name['en'] ?? '';
+            $langName     = $product->name[$locale] ?? $product->name['uz'] ?? $product->name['en'] ?? '';
+            $variantName  = $variant
+                ? ($variant->name[$locale] ?? $variant->name['uz'] ?? $variant->name['en'] ?? null)
+                : null;
 
             $lineItems[] = [
-                'product_id' => $product->id,
-                'name'       => $langName,
-                'price'      => $price,
-                'quantity'   => $qty,
-                'unit'       => $product->unit ?? 'dona',
+                'product_id'   => $product->id,
+                'variant_id'   => $variant?->id,
+                'variant_name' => $variantName,
+                'name'         => $langName,
+                'price'        => $price,
+                'quantity'     => $qty,
+                'unit'         => $product->unit ?? 'dona',
             ];
         }
 
