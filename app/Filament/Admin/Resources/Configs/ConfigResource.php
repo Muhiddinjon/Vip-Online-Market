@@ -44,7 +44,10 @@ class ConfigResource extends Resource
             ->columns([
                 TextColumn::make('title_uz')
                     ->label(__('admin.config.title'))
-                    ->getStateUsing(fn (Config $record) => $record->title['uz'] ?? $record->title['en'] ?? '—')
+                    ->getStateUsing(function (Config $record) {
+                        $lang = app()->getLocale();
+                        return $record->title[$lang] ?? $record->title['uz'] ?? $record->title['en'] ?? '—';
+                    })
                     ->searchable(query: fn ($query, $search) => $query->whereRaw(
                         'JSON_UNQUOTE(JSON_EXTRACT(title, "$.uz")) LIKE ?', ["%{$search}%"]
                     )),
@@ -63,7 +66,7 @@ class ConfigResource extends Resource
                     ->label(__('admin.common.edit'))
                     ->slideOver()
                     ->form(fn (Config $record) => [
-                        Section::make($record->title['uz'] ?? $record->title['en'] ?? $record->keyword)
+                        Section::make((fn () => $record->title[app()->getLocale()] ?? $record->title['uz'] ?? $record->title['en'] ?? $record->keyword)())
                             ->description(__('admin.config.keyword') . ': ' . $record->keyword)
                             ->components(match ($record->type) {
                                 'textarea' => [
