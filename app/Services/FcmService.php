@@ -6,7 +6,6 @@ use App\Models\Order;
 use App\Models\PromoNotification;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
-use Kreait\Firebase\Contract\Messaging;
 use Kreait\Firebase\Messaging\AndroidConfig;
 use Kreait\Firebase\Messaging\ApnsConfig;
 use Kreait\Firebase\Messaging\CloudMessage;
@@ -14,7 +13,10 @@ use Kreait\Firebase\Messaging\Notification;
 
 class FcmService
 {
-    public function __construct(private readonly Messaging $messaging) {}
+    private function messaging(): \Kreait\Firebase\Contract\Messaging
+    {
+        return app('firebase.messaging');
+    }
 
     /**
      * Order statusi o'zgarganda foydalanuvchiga xabar yuboradi.
@@ -56,7 +58,7 @@ class FcmService
             );
 
         try {
-            $this->messaging->send($message);
+            $this->messaging()->send($message);
         } catch (\Throwable $e) {
             if ($this->isInvalidToken($e->getMessage())) {
                 $user->update(['fcm_token' => null]);
@@ -111,7 +113,7 @@ class FcmService
                 $tokens = $users->pluck('fcm_token')->all();
 
                 try {
-                    $report = $this->messaging->sendMulticast($baseMessage, $tokens);
+                    $report = $this->messaging()->sendMulticast($baseMessage, $tokens);
                     $successCount += $report->successes()->count();
 
                     $stale = array_merge(

@@ -13,7 +13,9 @@ class ListPromoNotifications extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label(__('admin.promo_notification.create')),
+            CreateAction::make()
+                ->label(__('admin.promo_notification.create'))
+                ->createAnother(false),
         ];
     }
 }

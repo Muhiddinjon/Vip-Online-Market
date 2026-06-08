@@ -105,7 +105,7 @@ class PromoNotificationResource extends Resource
             ->columns([
                 ImageColumn::make('image')
                     ->label('')
-                    ->size(60)
+                    ->imageSize(60)
                     ->extraImgAttributes(['style' => 'border-radius:4px;object-fit:cover'])
                     ->defaultImageUrl(null),
                 TextColumn::make('title_uz')
@@ -180,9 +180,8 @@ class PromoNotificationResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListPromoNotifications::route('/'),
-            'create' => Pages\CreatePromoNotification::route('/create'),
-            'edit'   => Pages\EditPromoNotification::route('/{record}/edit'),
+            'index' => Pages\ListPromoNotifications::route('/'),
+            'edit'  => Pages\EditPromoNotification::route('/{record}/edit'),
         ];
     }
 }
