@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Http\Responses\LogoutResponse;
+use App\Models\Order;
+use App\Observers\OrderObserver;
 use BezhanSalleh\LanguageSwitch\LanguageSwitch;
 use BezhanSalleh\LanguageSwitch\Enums\Placement;
 use Filament\Auth\Http\Responses\Contracts\LogoutResponse as LogoutResponseContract;
@@ -17,6 +19,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Order::observe(OrderObserver::class);
+
         LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
             $switch
                 ->locales(['uz', 'tr', 'en'])

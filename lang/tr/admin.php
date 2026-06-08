@@ -17,7 +17,8 @@ return [
         'users'            => 'Kullanıcılar',
         'orders'           => 'Siparişler',
         'branches'         => 'Şubeler',
-        'dashboard'        => 'Yönetim Paneli',
+        'dashboard'           => 'Yönetim Paneli',
+        'promo_notifications' => 'Push Bildirimler',
     ],
 
     // Common actions & labels
@@ -258,6 +259,23 @@ return [
 
     'auth' => [
         'back_to_home' => 'Ana sayfaya dön',
+    ],
+
+    // Promo Notifications
+    'promo_notification' => [
+        'section_content'          => 'Mesaj içeriği',
+        'section_image'            => 'Görsel (isteğe bağlı)',
+        'title'                    => 'Başlık',
+        'body'                     => 'İçerik',
+        'image'                    => 'Görsel',
+        'sent_at'                  => 'Gönderilme zamanı',
+        'recipients_count'         => 'Alıcı sayısı',
+        'send'                     => 'Gönder',
+        'create'                   => 'Yeni bildirim',
+        'send_confirm_heading'     => 'Bildirim gönder',
+        'send_confirm_description' => 'Bu bildirim FCM tokeni olan tüm kullanıcılara gönderilecek. Devam edilsin mi?',
+        'send_confirm_button'      => 'Evet, gönder',
+        'sent_success'             => ':count kullanıcıya başarıyla gönderildi.',
     ],
 
 ];

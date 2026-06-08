@@ -17,7 +17,8 @@ return [
         'users'            => 'Foydalanuvchilar',
         'orders'           => 'Buyurtmalar',
         'branches'         => 'Filiallar',
-        'dashboard'        => 'Boshqaruv paneli',
+        'dashboard'             => 'Boshqaruv paneli',
+        'promo_notifications'   => 'Push xabarlar',
     ],
 
     // Common actions & labels
@@ -254,6 +255,23 @@ return [
         'platform_private'=> 'Faqat server tomonida',
         'text_hint'       => 'Matn kiritng',
         'textarea_hint'   => 'Bir nechta qiymat kiritish uchun nuqtali vergul (;) dan foydalaning',
+    ],
+
+    // Promo Notifications
+    'promo_notification' => [
+        'section_content'        => 'Xabar matni',
+        'section_image'          => 'Rasm (ixtiyoriy)',
+        'title'                  => 'Sarlavha',
+        'body'                   => 'Matn',
+        'image'                  => 'Rasm',
+        'sent_at'                => 'Yuborilgan vaqt',
+        'recipients_count'       => 'Qabul qiluvchilar',
+        'send'                   => 'Yuborish',
+        'create'                 => 'Yangi xabar',
+        'send_confirm_heading'   => 'Xabarni yuborish',
+        'send_confirm_description' => 'Bu xabar FCM tokeni mavjud barcha foydalanuvchilarga yuboriladi. Davom ettirilsinmi?',
+        'send_confirm_button'    => 'Ha, yuborish',
+        'sent_success'           => ':count ta foydalanuvchiga muvaffaqiyatli yuborildi.',
     ],
 
     // Auth

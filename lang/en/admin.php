@@ -17,7 +17,8 @@ return [
         'users'            => 'Users',
         'orders'           => 'Orders',
         'branches'         => 'Branches',
-        'dashboard'        => 'Dashboard',
+        'dashboard'           => 'Dashboard',
+        'promo_notifications' => 'Push Notifications',
     ],
 
     // Common actions & labels
@@ -258,6 +259,23 @@ return [
 
     'auth' => [
         'back_to_home' => 'Back to home',
+    ],
+
+    // Promo Notifications
+    'promo_notification' => [
+        'section_content'          => 'Message content',
+        'section_image'            => 'Image (optional)',
+        'title'                    => 'Title',
+        'body'                     => 'Body',
+        'image'                    => 'Image',
+        'sent_at'                  => 'Sent at',
+        'recipients_count'         => 'Recipients',
+        'send'                     => 'Send',
+        'create'                   => 'New notification',
+        'send_confirm_heading'     => 'Send notification',
+        'send_confirm_description' => 'This notification will be sent to all users with an FCM token. Continue?',
+        'send_confirm_button'      => 'Yes, send',
+        'sent_success'             => 'Successfully sent to :count user(s).',
     ],
 
 ];
