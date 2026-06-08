@@ -6,9 +6,10 @@ use App\Models\PromoNotification;
 use App\Services\FcmService;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
@@ -54,7 +55,7 @@ class PromoNotificationResource extends Resource
         return $schema->components([
             Section::make(__('admin.promo_notification.section_content'))->components([
                 Tabs::make('translations')->tabs([
-                    Tabs\Tab::make("O'zbekcha")->schema([
+                    Tab::make("O'zbekcha")->schema([
                         TextInput::make('title_uz')
                             ->label(__('admin.promo_notification.title'))
                             ->required()
@@ -64,7 +65,7 @@ class PromoNotificationResource extends Resource
                             ->required()
                             ->rows(4),
                     ]),
-                    Tabs\Tab::make('English')->schema([
+                    Tab::make('English')->schema([
                         TextInput::make('title_en')
                             ->label(__('admin.promo_notification.title'))
                             ->required()
@@ -74,7 +75,7 @@ class PromoNotificationResource extends Resource
                             ->required()
                             ->rows(4),
                     ]),
-                    Tabs\Tab::make('Türkçe')->schema([
+                    Tab::make('Türkçe')->schema([
                         TextInput::make('title_tr')
                             ->label(__('admin.promo_notification.title'))
                             ->required()
